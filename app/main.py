@@ -43,7 +43,8 @@ def track():
         data["reply"] = "Data Received"
         data["status"] = 'success'
         return jsonify(data)
-
+    else:
+        return ""
 
 # A welcome message to test our server
 @app.route('/')
