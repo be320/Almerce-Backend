@@ -27,8 +27,12 @@ def track():
     request_data = request.get_json()
     if "event" in request_data:
         event_type = request_data["event"]
-        if event_type == "Product Added":
+        if event_type == "Order Completed":
+#            order_completed_details(request_data)
+            print("Order Completed")
+        else:
             product_event_details(request_data)
+
         #elif event_type == "Product Clicked":
 
         #elif event_type == "Product Removed":
