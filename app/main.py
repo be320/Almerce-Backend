@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
+from product_added import *
 
 app = Flask(__name__)
 
@@ -23,13 +24,14 @@ def sendText():
 # Track Click Events
 @app.route('/track', methods=["POST"])
 def track():
-    if request.method == "POST":
-        request_data = request.get_json()
-        print(request_data)
-        data = {}
-        data["reply"] = "Data Received"
-        data["status"] = 'success'
-        return jsonify(data)
+    request_data = request.get_json()
+    event_type = request_data["event"]
+    print(event_type)
+#    print(request_data)
+    data = {}
+    data["reply"] = "Data Received"
+    data["status"] = 'success'
+    return jsonify(data)
 
 
 # A welcome message to test our server
