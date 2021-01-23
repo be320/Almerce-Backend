@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
-from .product_event import product_added_details
+from .product_event import product_event_details
 
 app = Flask(__name__)
 
