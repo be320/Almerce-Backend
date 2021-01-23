@@ -32,17 +32,6 @@ def track():
             print("Order Completed")
         else:
             product_event_details(request_data)
-
-        #elif event_type == "Product Clicked":
-
-        #elif event_type == "Product Removed":
-
-        #elif event_type == "Order Completed":
-        
-        #else:
-        #    print("Other events not handled")
-
-    #    print(request_data)
         data = {}
         data["reply"] = "Data Received"
         data["status"] = 'success'
