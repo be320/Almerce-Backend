@@ -32,7 +32,10 @@
     "messageId": "ajs-d7204b164c5d903d3f9ea8a0dfafbf90", 
     "originalTimestamp": "2021-01-23T16:53:21.383Z", 
     "projectId": "pbKAhxYZzobb92F3Djdv8U", 
-    "properties": {"id": "1602"}, 
+    "properties": 
+    {
+        "id": "1602"
+    }, 
     "receivedAt": "2021-01-23T16:53:21.884Z", 
     "sentAt": "2021-01-23T16:53:21.388Z", 
     "timestamp": "2021-01-23T16:53:21.879Z", 

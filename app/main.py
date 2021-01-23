@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
-from .product_added import product_added_details
+from .product_event import product_added_details
 
 app = Flask(__name__)
 
@@ -27,7 +27,7 @@ def track():
     request_data = request.get_json()
     event_type = request_data["event"]
     if event_type == "Product Added":
-        product_added_details(request_data)
+        product_event_details(request_data)
     #elif event_type == "Product Clicked":
 
     #elif event_type == "Product Removed":
