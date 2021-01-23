@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
-#from product_added import *
+import product_added
 
 app = Flask(__name__)
 
@@ -26,7 +26,17 @@ def sendText():
 def track():
     request_data = request.get_json()
     event_type = request_data["event"]
-    print(event_type)
+    if event_type == "Product Added":
+        product_added.event_details(request_data)
+    #elif event_type == "Product Clicked":
+
+    #elif event_type == "Product Removed":
+
+    #elif event_type == "Order Completed":
+    
+    #else:
+    #    print("Other events not handled")
+
 #    print(request_data)
     data = {}
     data["reply"] = "Data Received"
