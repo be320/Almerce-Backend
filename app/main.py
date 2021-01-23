@@ -25,7 +25,7 @@ def sendText():
 @app.route('/track', methods=["POST"])
 def track():
     request_data = request.get_json()
-    if request_data.has_key("event"):
+    if "event" in request_data:
         event_type = request_data["event"]
         if event_type == "Product Added":
             product_event_details(request_data)
