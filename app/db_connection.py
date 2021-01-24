@@ -21,6 +21,21 @@ def db_connect():
         record = cursor.fetchone()
         print("You are connected to - ", record, "\n")
 
+        postgreSQL_select_Query = "select * from toys_shop.product_clicked"
+
+        cursor.execute(postgreSQL_select_Query)
+        print("Selecting rows from product_clicked table using cursor.fetchall")
+        product_clicked_records = cursor.fetchall()
+
+        print("Print each row and it's columns values")
+        for row in product_clicked_records:
+            print("Product ID  = ", row[12])
+            print("Event = ", row[3])
+            print("Session ID = ", row[13])
+            print("Timestamp = ", row[18], "\n")
+
+
+
     except (Exception, Error) as error:
         print("Error while connecting to PostgreSQL", error)
     finally:
