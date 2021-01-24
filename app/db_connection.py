@@ -2,18 +2,18 @@ import psycopg2
 from psycopg2 import Error
 from .product_event import *
 
-"""
-{
-    event,
-    product_id,
-    session_id,
-    user_id,
-    timestamp,
-    sale_price,
-    regular_price,
-    categories
-}
-"""
+#"""
+#{
+#    event,
+#    product_id,
+#    session_id,
+#    user_id,
+#    timestamp,
+#    sale_price,
+#    regular_price,
+#    categories
+#}
+#"""
 
 def db_connect():
     try:

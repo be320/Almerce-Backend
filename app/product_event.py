@@ -20,10 +20,10 @@ def get_clicked_data(cursor):
     print("Print each row and it's columns values")
     for row in product_clicked_records:
         product_id = row[12]
-        print("Product ID  = ", row[12])
-        print("Event = ", row[3])
-        print("Session ID = ", row[13])
-        print("Timestamp = ", row[18], "\n")
+#        print("Product ID  = ", row[12])
+#        print("Event = ", row[3])
+#        print("Session ID = ", row[13])
+#        print("Timestamp = ", row[18], "\n")
         postgreSQL_select_Query = "select * from toys_shop.products where id = "+product_id+"::varchar"
         cursor.execute(postgreSQL_select_Query)
         detailed_product = cursor.fetchall()
