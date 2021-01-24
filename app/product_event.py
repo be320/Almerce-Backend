@@ -27,9 +27,10 @@ def get_clicked_data(cursor):
         postgreSQL_select_Query = "select * from toys_shop.products where id = "+product_id+"::varchar"
         cursor.execute(postgreSQL_select_Query)
         detailed_product = cursor.fetchall()
-        print(len(detailed_product))
-        print("Sale Price = ", detailed_product[0][3])
-        print("Regular Price = ", detailed_product[0][4])
-        print("Category = ", detailed_product[0][5])
+        print(detailed_product)
+#        print(len(detailed_product))
+#        print("Sale Price = ", detailed_product[0][3])
+#        print("Regular Price = ", detailed_product[0][4])
+#        print("Category = ", detailed_product[0][5])
 
     return data
