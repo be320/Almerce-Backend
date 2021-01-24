@@ -77,7 +77,7 @@ def track():
         event_type = request_data["event"]
         if event_type == "Order Completed":
             # order_completed_details(request_data)
-            print("Order Completed")
+            print(request_data)
         else:
             product_event_details(request_data)
         data = {}
