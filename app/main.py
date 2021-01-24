@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 from .product_event import product_event_details
 from .order_completed import order_completed_details
+from .db_connection import db_connect
+
 
 app = Flask(__name__)
 
@@ -91,10 +93,11 @@ def track():
 # Load data from database to be used in model
 @app.route('/load_data', methods=["GET"])
 def load_data():
-        data = {}
-        data["reply"] = "Working!!!!!------------aaaaaaa"
-        data["status"] = 'success'
-        return jsonify(data)
+    db_connect()
+    data = {}
+    data["reply"] = "Working!!!!!------------aaaaaaa"
+    data["status"] = 'success'
+    return jsonify(data)
 
 
 
