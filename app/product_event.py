@@ -24,7 +24,7 @@ def get_clicked_data(cursor):
         print("Event = ", row[3])
         print("Session ID = ", row[13])
         print("Timestamp = ", row[18], "\n")
-        postgreSQL_select_Query = "select * from toys_shop.products where id::TEXT = "+str(product_id)
+        postgreSQL_select_Query = "select * from toys_shop.products where id = "+str(product_id)+"::varchar"
         cursor.execute(postgreSQL_select_Query)
         detailed_product = cursor.fetch()
         print("Sale Price = ", detailed_product[3])
