@@ -7,17 +7,65 @@ app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
+questions = [
+    {
+        "question": "ممكن اعرف سن الطفل اللي هيلعب باللعبة ؟",
+        "responseType": "single-numeric",
+        "choices": []
+
+    },
+    {
+        "question": "ممكن اعرف الطفل ولد و لا بنت ؟",
+        "responseType": "choice",
+        "choices": ["بنت", "ولد"]
+
+    },
+    {
+        "question": "ايه هي المهارات اللي عايز اللعبة تنميها عند الطفل باللعبة ؟",
+        "responseType": "choice",
+        "choices": ["الحساب", "الذاكرة", "الذكاء", "ال"]
+
+    },
+    {
+        "question": "حضرتك تحب اللعبة من اني قسم ؟",
+        "responseType": "choice",
+        "choices": ["الحساب", "الذاكرة", "الذكاء"]
+
+    },
+    {
+        "question": "حضرتك تحب تكون اللعبه بنظام التعليم مونتيسوري ؟",
+        "responseType": "choice",
+        "choices": ["نعم", "لا"]
+
+    },
+    {
+        "question": "تحب ادورلك في الاسعار من كام لكام ؟",
+        "responseType": "range",
+        "choices": []
+
+    }
+
+]
+
 
 # Text Messages
 @app.route('/sendText', methods=["POST"])
 @cross_origin()
 def sendText():
     request_data = request.get_json()
-    print(request_data)
-    request_data["Template"]["serverSide"] = True
+    index = request_data["index"]
     data = {}
-    data["reply"] = "Data Received"
-    data["status"] = 'success'
+    if index>0 & index<len(questions):
+        data = questions[index]
+        data["Template"]["serverSide"] = True
+        data["status"] = 'success'
+    else:
+        data = questions[0]
+        data["question"] = "هناك عطل"
+        data["responseType"] = "string"
+        data["Template"]["serverSide"] = True
+        data["status"] = 'error'
+    print(data)
     return jsonify(request_data)
 
 
@@ -28,7 +76,7 @@ def track():
     if "event" in request_data:
         event_type = request_data["event"]
         if event_type == "Order Completed":
-#            order_completed_details(request_data)
+            # order_completed_details(request_data)
             print("Order Completed")
         else:
             product_event_details(request_data)
@@ -40,13 +88,17 @@ def track():
         return ""
 
 # A welcome message to test our server
+
+
 @app.route('/')
 @cross_origin()
 def index():
     return "<h1>Welcome to our server !!</h1>"
 
+# A welcome message to test our server
 
 
-
-
-
+@app.route('/almercesays', methods=["POST"])
+@cross_origin()
+def almercesays():
+    return
