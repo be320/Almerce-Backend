@@ -91,7 +91,11 @@ def track():
 # Load data from database to be used in model
 @app.route('/load_data', methods=["GET"])
 def load_data():
-    print("Working")
+        data = {}
+        data["reply"] = "Working!!!!!------------aaaaaaa"
+        data["status"] = 'success'
+        return jsonify(data)
+
 
 
 # A welcome message to test our server
