@@ -1,0 +1,45 @@
+{
+    "_metadata":
+    {
+        "bundled": ["Segment.io", "Visual Tagger"],
+        "unbundled": ["Google Analytics"]
+    }, 
+    "anonymousId": "ec2d19d0-507d-4837-99ab-4f9d5dadc716", 
+    "channel": "client", 
+    "context": 
+    {
+        "campaign": {}, 
+        "ip": "156.204.50.119", 
+        "library": 
+        {
+            "name": "analytics.js", 
+            "version": "4.0.4"
+        }, 
+        "locale": "en-US", 
+        "page": 
+        {
+            "path": "/", 
+            "referrer": "https://almerce.xyz/?post_type=product", 
+            "search": "?product=r21-1-%d9%84%d8%b9%d8%a8%d8%a9-%d8%a7%d9%84%d8%b0%d8%a7%d9%83%d8%b1%d9%87-%d9%85%d8%b5%d8%b1%d9%8a", 
+            "title": "R21-1 لعبة الذاكره مصري – Toy Store", 
+            "url": "https://almerce.xyz/?product=r21-1-%d9%84%d8%b9%d8%a8%d8%a9-%d8%a7%d9%84%d8%b0%d8%a7%d9%83%d8%b1%d9%87-%d9%85%d8%b5%d8%b1%d9%8a"
+        }, 
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36 Edg/88.0.705.50", 
+        "visual_tagger": True
+    }, 
+    "event": "Order Completed", 
+    "integrations": {}, 
+    "messageId": "ajs-d7204b164c5d903d3f9ea8a0dfafbf90", 
+    "originalTimestamp": "2021-01-23T16:53:21.383Z", 
+    "projectId": "pbKAhxYZzobb92F3Djdv8U", 
+    "properties": 
+    {
+        "Order Details": "2*1 صيد سمك وشاكوش صغير W5-11  ,W23-22  ,W23-22  ,W23-23  ,W23-24"
+    }, 
+    "receivedAt": "2021-01-23T16:53:21.884Z", 
+    "sentAt": "2021-01-23T16:53:21.388Z", 
+    "timestamp": "2021-01-23T16:53:21.879Z", 
+    "type": "track", 
+    "userId": None, 
+    "version": 2
+}

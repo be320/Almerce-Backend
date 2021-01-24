@@ -87,6 +87,13 @@ def track():
     else:
         return ""
 
+
+# Load data from database to be used in model
+@app.route('/load_data', methods=["GET"])
+def load_data():
+    print("Working")
+
+
 # A welcome message to test our server
 
 
