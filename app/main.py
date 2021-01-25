@@ -65,7 +65,6 @@ def sendText():
     if index>=0 & index<len(messages):
         data = messages[index]
         data["serverSide"] = True
-        index+=1
         data["index"] = index
         data["status"] = 'success'
     else:
