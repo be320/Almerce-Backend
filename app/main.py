@@ -57,10 +57,12 @@ messages = [
 def sendText():
     request_data = request.get_json()
     index = request_data["index"]
+    index = 0
     data = {}
     if index>=0 & index<len(messages):
         data = messages[index]
         data["serverSide"] = True
+        data["index"] = index
         data["status"] = 'success'
     else:
         data = messages[0]
