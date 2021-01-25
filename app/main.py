@@ -10,40 +10,40 @@ app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-questions = [
+messages = [
     {
-        "question": "ممكن اعرف سن الطفل اللي هيلعب باللعبة ؟",
-        "responseType": "single-numeric",
+        "message": {"Textfield":"ممكن اعرف سن الطفل اللي هيلعب باللعبة ؟"},
+        "elementType": "MessageTemplate",
         "choices": []
 
     },
     {
-        "question": "ممكن اعرف الطفل ولد و لا بنت ؟",
-        "responseType": "choice",
+        "message": {"Textfield":"ممكن اعرف الطفل ولد و لا بنت ؟"},
+        "elementType": "ChoiceTemplate",
         "choices": ["بنت", "ولد"]
 
     },
     {
-        "question": "ايه هي المهارات اللي عايز اللعبة تنميها عند الطفل باللعبة ؟",
-        "responseType": "choice",
+        "message": {"Textfield":"ايه هي المهارات اللي عايز اللعبة تنميها عند الطفل باللعبة ؟"},
+        "elementType": "ChoiceTemplate",
         "choices": ["الحساب", "الذاكرة", "الذكاء", "ال"]
 
     },
     {
-        "question": "حضرتك تحب اللعبة من اني قسم ؟",
-        "responseType": "choice",
+        "message": {"Textfield":"حضرتك تحب اللعبة من اني قسم ؟"},
+        "elementType": "ChoiceTemplate",
         "choices": ["الحساب", "الذاكرة", "الذكاء"]
 
     },
     {
-        "question": "حضرتك تحب تكون اللعبه بنظام التعليم مونتيسوري ؟",
-        "responseType": "choice",
+        "message": {"Textfield":"حضرتك تحب تكون اللعبه بنظام التعليم مونتيسوري ؟"},
+        "elementType": "ChoiceTemplate",
         "choices": ["نعم", "لا"]
 
     },
     {
-        "question": "تحب ادورلك في الاسعار من كام لكام ؟",
-        "responseType": "range",
+        "message": {"Textfield":"تحب ادورلك في الاسعار من كام لكام ؟"},
+        "elementType": "MessageTemplate",
         "choices": []
 
     }
@@ -58,16 +58,16 @@ def sendText():
     request_data = request.get_json()
     index = request_data["index"]
     data = {}
-    if index>0 & index<len(questions):
-        data = questions[index]
-        data["Template"]["serverSide"] = True
+    if index>=0 & index<len(messages):
+        data = messages[index]
+        data["serverSide"] = True
         data["status"] = 'success'
     else:
-        data = questions[0]
-        data["question"] = "هناك عطل"
-        data["responseType"] = "string"
-        data["Template"]["serverSide"] = True
-        data["status"] = 'error'
+        data = messages[0]
+        data["message"] = "هناك عطل"
+        data["elementType"] = "MessageTemplate"
+        data["serverSide"] = True
+        data["status"] = 'BAD REQUEST'
     print(data)
     return jsonify(request_data)
 
