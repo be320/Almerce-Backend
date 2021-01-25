@@ -7,9 +7,9 @@ from .db_connection import db_connect
 
 app = Flask(__name__)
 
-if __name__ == '__main__':
-    app.debug = True
-    app.run()
+# if __name__ == '__main__':
+#     app.debug = True
+#     app.run()
 
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
@@ -60,6 +60,8 @@ messages = [
 @cross_origin()
 def sendText():
     request_data = request.get_json()
+    print(request_data)
+    return jsonify(request_data)
     index = request_data["index"]
     index = 0
     data = {}
@@ -75,7 +77,7 @@ def sendText():
         data["serverSide"] = True
         data["status"] = 'BAD REQUEST'
     print(data)
-    return jsonify(request_data)
+    return jsonify(data)
 
 
 # Track Click Events
