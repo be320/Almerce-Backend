@@ -12,42 +12,86 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 messages = [
     {
-        "message": {"Textfield":"ممكن اعرف سن الطفل اللي هيلعب باللعبة ؟"},
+        "message": {"TextField": "اهلا بيك، انا لسة تحت الانشاء فسألك شوية اسئلة كدة عشان اعرف اساعدك..يلا نبدأ؟"},
         "elementType": "MessageTemplate",
         "choices": []
 
     },
     {
-        "message": {"Textfield":"ممكن اعرف الطفل ولد و لا بنت ؟"},
+        "message": {"TextField": "ممكن اعرف سن الطفل اللي هيلعب باللعبة ؟"},
+        "elementType": "MessageTemplate",
+        "choices": []
+
+    },
+    {
+        "message": {"TextField": "ممكن اعرف الطفل ولد و لا بنت ؟"},
         "elementType": "ChoiceTemplate",
         "choices": ["بنت", "ولد"]
 
     },
     {
-        "message": {"Textfield":"ايه هي المهارات اللي عايز اللعبة تنميها عند الطفل باللعبة ؟"},
-        "elementType": "ChoiceTemplate",
-        "choices": ["الحساب", "الذاكرة", "الذكاء", "ال"]
-
-    },
-    {
-        "message": {"Textfield":"حضرتك تحب اللعبة من اني قسم ؟"},
+        "message": {"TextField": "ايه هي المهارات اللي عايز اللعبة تنميها عند الطفل باللعبة ؟"},
         "elementType": "ChoiceTemplate",
         "choices": ["الحساب", "الذاكرة", "الذكاء"]
 
     },
     {
-        "message": {"Textfield":"حضرتك تحب تكون اللعبه بنظام التعليم مونتيسوري ؟"},
+        "message": {"TextField": "حضرتك تحب اللعبة من اني قسم ؟"},
+        "elementType": "ChoiceTemplate",
+        "choices": ["الحساب", "الذاكرة", "الذكاء"]
+
+    },
+    {
+        "message": {"TextField": "طيب ممكن صورة او صور  للمنتج الي بتدور عليه"},
+        "elementType": "MessageTemplate",
+        "choices": []
+
+    },
+    {
+        "message": {"TextField": " تمام جدا، تحب ادورلك في الاسعار من كام لكام؟"},
+        "elementType": "MessageTemplate",
+        "choices": []
+
+    },
+    {
+        "message": {"TextField": " تقريبا انا خلاص عرفت انت بتدور علي ايه...بس ممكن برده تقولنا اسم المنتج بصوتك ؟"},
+        "elementType": "MessageTemplate",
+        "choices": []
+
+    },
+    {
+        "message": {"TextField": "انا خلاص لاقيت منتاجات مناسبة.. تحب اوريك الاقتراحات؟ "},
         "elementType": "ChoiceTemplate",
         "choices": ["نعم", "لا"]
 
     },
     {
-        "message": {"Textfield":"تحب ادورلك في الاسعار من كام لكام ؟"},
+        "elementType": "ProductCardTemplate",
+        "cards": [{"imgSrc": "https://safwatoys.com/image/cache/catalog/W50-2/x122c5919-e115-43fc-a6c8-d283ce0ffb72-230x230.jpg.pagespeed.ic.ZrBiS-lubg.webp",
+                   "ProductUrl": "https://safwatoys.com/index.php?route=product/product&product_id=1049",
+                   "productHeader": "لوحة تلوين بالرمل W50-2",
+                   "productParagraph": "لوحة معها رمل ملون يقوم الطفل بلصقها ف مكانها المناسب حسب الصورة الملونة لتتحول الي صوره ملونه بشكل مميز ينمي العضلات الدقيقة واصابع اليد ومهارات التحكم تزيد ثقة الطفل بنفسه متاح عدة اشكال تساعد في تمييز الطفل للالوان وتنميه مهاره المطابقة مناسبه للاطفال فرط الحركه مناسب لسن 4 سنين", "id": "78"},
+                  {"imgSrc": "https://safwatoys.com/image/cache/catalog/W50-2/x122c5919-e115-43fc-a6c8-d283ce0ffb72-230x230.jpg.pagespeed.ic.ZrBiS-lubg.webp",
+                   "ProductUrl": "https://safwatoys.com/index.php?route=product/product&product_id=1049",
+                   "productHeader": "لوحة تلوين بالرمل W50-2",
+                   "productParagraph": "لوحة معها رمل ملون يقوم الطفل بلصقها ف مكانها المناسب حسب الصورة الملونة لتتحول الي صوره ملونه بشكل مميز ينمي العضلات الدقيقة واصابع اليد ومهارات التحكم تزيد ثقة الطفل بنفسه متاح عدة اشكال تساعد في تمييز الطفل للالوان وتنميه مهاره المطابقة مناسبه للاطفال فرط الحركه مناسب لسن 4 سنين", "id": "78"},
+                  {"imgSrc": "https://safwatoys.com/image/cache/catalog/W50-2/x122c5919-e115-43fc-a6c8-d283ce0ffb72-230x230.jpg.pagespeed.ic.ZrBiS-lubg.webp",
+                   "ProductUrl": "https://safwatoys.com/index.php?route=product/product&product_id=1049", "productHeader": "لوحة تلوين بالرمل W50-2", "productParagraph": "لوحة معها رمل ملون يقوم الطفل بلصقها ف مكانها المناسب حسب الصورة الملونة لتتحول الي صوره ملونه بشكل مميز ينمي العضلات الدقيقة واصابع اليد ومهارات التحكم تزيد ثقة الطفل بنفسه متاح عدة اشكال تساعد في تمييز الطفل للالوان وتنميه مهاره المطابقة مناسبه للاطفال فرط الحركه مناسب لسن 4 سنين", "id": "78"},
+                  {"imgSrc": "https://safwatoys.com/image/cache/catalog/W50-2/x122c5919-e115-43fc-a6c8-d283ce0ffb72-230x230.jpg.pagespeed.ic.ZrBiS-lubg.webp", "ProductUrl": "https://safwatoys.com/index.php?route=product/product&product_id=1049", "productHeader": "لوحة تلوين بالرمل W50-2", "productParagraph": "لوحة معها رمل ملون يقوم الطفل بلصقها ف مكانها المناسب حسب الصورة الملونة لتتحول الي صوره ملونه بشكل مميز ينمي العضلات الدقيقة واصابع اليد ومهارات التحكم تزيد ثقة الطفل بنفسه متاح عدة اشكال تساعد في تمييز الطفل للالوان وتنميه مهاره المطابقة مناسبه للاطفال فرط الحركه مناسب لسن 4 سنين", "id": "78"}, {"imgSrc": "https://safwatoys.com/image/cache/catalog/W50-2/x122c5919-e115-43fc-a6c8-d283ce0ffb72-230x230.jpg.pagespeed.ic.ZrBiS-lubg.webp", "ProductUrl": "https://safwatoys.com/index.php?route=product/product&product_id=1049", "productHeader": "لوحة تلوين بالرمل W50-2", "productParagraph": "لوحة معها رمل ملون يقوم الطفل بلصقها ف مكانها المناسب حسب الصورة الملونة لتتحول الي صوره ملونه بشكل مميز ينمي العضلات الدقيقة واصابع اليد ومهارات التحكم تزيد ثقة الطفل بنفسه متاح عدة اشكال تساعد في تمييز الطفل للالوان وتنميه مهاره المطابقة مناسبه للاطفال فرط الحركه مناسب لسن 4 سنين", "id": "78"}]
+    },
+
+    {
+        "message": {},
+        "elementType": "StarRatingTemplate",
+        "choices": []
+
+    },
+    {
+        "message": {"TextField": "متشكر علي تقيمك جدا عشان ده هيساعدني احسن من نفسي "},
         "elementType": "MessageTemplate",
         "choices": []
 
-    }
-
+    },
 ]
 
 
@@ -58,11 +102,85 @@ def sendText():
     request_data = request.get_json()
     temp = request_data["Template"]
     index = temp["index"]
-    choice =  temp["message"]["TextField"]
+    choice = temp["message"]["TextField"]
     print(index)
     print(choice)
     data = {}
-    if index>=0 & index<len(messages):
+    if index >= 0 & index < len(messages):
+        data = messages[index]
+        data["serverSide"] = True
+        data["index"] = index
+        data["status"] = 'success'
+    else:
+        data = messages[0]
+        data["message"] = "هناك عطل"
+        data["elementType"] = "MessageTemplate"
+        data["serverSide"] = True
+        data["status"] = 'BAD REQUEST'
+    print(data)
+    return jsonify(data)
+
+
+@app.route('/sendImagesList', methods=["POST"])
+@cross_origin()
+def sendImagesList():
+    request_data = request.get_json()
+    temp = request_data["Template"]
+    index = temp["index"]
+    imageList = temp["imageList"]
+    print(index)
+    print(imageList)
+    data = {}
+    if index >= 0 & index < len(messages):
+        data = messages[index]
+        data["serverSide"] = True
+        data["index"] = index
+        data["status"] = 'success'
+    else:
+        data = messages[0]
+        data["message"] = "هناك عطل"
+        data["elementType"] = "MessageTemplate"
+        data["serverSide"] = True
+        data["status"] = 'BAD REQUEST'
+    print(data)
+    return jsonify(data)
+
+@app.route('/sendAudioMessage', methods=["POST"])
+@cross_origin()
+def sendAudioMessage():
+    request_data = request.get_json()
+    temp = request_data["Template"]
+    index = temp["index"]
+    audio = temp["audio"]
+    print(index)
+    print(audio)
+    data = {}
+    if index >= 0 & index < len(messages):
+        data = messages[index]
+        data["serverSide"] = True
+        data["index"] = index
+        data["status"] = 'success'
+    else:
+        data = messages[0]
+        data["message"] = "هناك عطل"
+        data["elementType"] = "MessageTemplate"
+        data["serverSide"] = True
+        data["status"] = 'BAD REQUEST'
+    print(data)
+    return jsonify(data)
+
+
+@app.route('/sendchangeRating', methods=["POST"])
+@cross_origin()
+def sendchangeRating():
+    request_data = request.get_json()
+    temp = request_data["Template"]
+    index = temp["index"]
+    rating = temp["rating"]
+    print(index)
+    print(rating)
+    data = {}
+    if index >= 0 & index < len(messages):
         data = messages[index]
         data["serverSide"] = True
         data["index"] = index
