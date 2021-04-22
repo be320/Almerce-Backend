@@ -65,7 +65,7 @@ messages = [
     },
     {
         "message": {"TextField": " تمام جدا، تحب ادورلك في الاسعار من كام لكام؟"},
-        "elementType": "SliderTemplate",
+        "elementType": "PriceSliderTemplate",
         "choices": []
 
     },
@@ -212,7 +212,7 @@ def sendpriceRange():
     index = temp["index"]
     price = temp["price"]
     print(index)
-    print(rating)
+    print(price)
     data = {}
     if index >= 0 & index < len(messages):
         data = messages[index]
