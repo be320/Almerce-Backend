@@ -12,15 +12,10 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 messages = [
     {
-        "message": {"TextField": " اهلا بيك، انا لسة تحت الانشاء فسألك شوية اسئلة كدة عشان اعرف اساعدك..يلا نبدأ؟ ممكن اعرف سن الطفل اللي هيلعب باللعبة ؟"},
+        "message": {"TextField": " اهلا بيك، انا لسة تحت الانشاء فسألك شوية اسئلة كدة عشان اعرف اساعدك..يلا نبدأ؟\n ممكن اعرف سن الطفل اللي هيلعب باللعبة ؟"},
         "elementType": "ChoiceTemplate",
-        "choices":  ["من 0-1 سنه","من1-2 سنه","من 3-4 سنه","من 4-5 سنه","من 5-6 سنه","اكثر من 6 سنوات"]
+        "choices":  ["اكثر من 6 سنوات","من 5-6 سنه","من 4-5 سنه","من 3-4 سنه","من1-2 سنه","من 0-1 سنه"]
 
-    },
-    {
-        "message": {"TextField": "ممكن اعرف سن الطفل اللي هيلعب باللعبة ؟"},
-        "elementType": "ChoiceTemplate",
-        "choices":  ["من 0-1 سنه","من1-2 سنه","من 3-4 سنه","من 4-5 سنه","من 5-6 سنه","اكثر من 6 سنوات"]
 
     },
     {
@@ -70,20 +65,14 @@ messages = [
     },
     {
         "message": {"TextField": " تمام جدا، تحب ادورلك في الاسعار من كام لكام؟"},
-        "elementType": "MessageTemplate",
-        "choices": []
-
-    },
-    {
-        "message": {"TextField": " تقريبا انا خلاص عرفت انت بتدور علي ايه...بس ممكن برده تقولنا اسم المنتج بصوتك ؟"},
-        "elementType": "MessageTemplate",
+        "elementType": "SliderTemplate",
         "choices": []
 
     },
     {
         "message": {"TextField": "انا خلاص لاقيت منتاجات مناسبة.. تحب اوريك الاقتراحات؟ "},
         "elementType": "ChoiceTemplate",
-        "choices": ["نعم", "لا"]
+        "choices": ["نعم"]
 
     },
     {
@@ -215,6 +204,29 @@ def sendchangeRating():
     print(data)
     return jsonify(data)
 
+@app.route('/sendpriceRange', methods=["POST"])
+@cross_origin()
+def sendpriceRange():
+    request_data = request.get_json()
+    temp = request_data["Template"]
+    index = temp["index"]
+    price = temp["price"]
+    print(index)
+    print(rating)
+    data = {}
+    if index >= 0 & index < len(messages):
+        data = messages[index]
+        data["serverSide"] = True
+        data["index"] = index
+        data["status"] = 'success'
+    else:
+        data = messages[0]
+        data["message"] = "هناك عطل"
+        data["elementType"] = "MessageTemplate"
+        data["serverSide"] = True
+        data["status"] = 'BAD REQUEST'
+    print(data)
+    return jsonify(data)
 
 # Track Click Events
 @app.route('/track', methods=["POST"])
