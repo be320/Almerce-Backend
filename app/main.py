@@ -65,7 +65,7 @@ messages = [
     },
     {
         "message": {"TextField": " تمام جدا، تحب ادورلك في الاسعار من كام لكام؟"},
-        "elementType": "PriceSliderTemplate",
+        "elementType": "MessageTemplate",
         "choices": []
 
     },
