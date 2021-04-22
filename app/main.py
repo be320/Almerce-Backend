@@ -19,8 +19,8 @@ messages = [
     },
     {
         "message": {"TextField": "ممكن اعرف سن الطفل اللي هيلعب باللعبة ؟"},
-        "elementType": "MessageTemplate",
-        "choices": []
+        "elementType": "ChoiceTemplate",
+        "choices":  ["من 0-1 سنه","من1-2 سنه","من 3-4 سنه","من 4-5 سنه","من 5-6 سنه","اكثر من 6 سنوات"]
 
     },
     {
