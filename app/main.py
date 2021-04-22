@@ -12,9 +12,9 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 messages = [
     {
-        "message": {"TextField": "اهلا بيك، انا لسة تحت الانشاء فسألك شوية اسئلة كدة عشان اعرف اساعدك..يلا نبدأ؟"},
-        "elementType": "MessageTemplate",
-        "choices": []
+        "message": {"TextField": " اهلا بيك، انا لسة تحت الانشاء فسألك شوية اسئلة كدة عشان اعرف اساعدك..يلا نبدأ؟ ممكن اعرف سن الطفل اللي هيلعب باللعبة ؟"},
+        "elementType": "ChoiceTemplate",
+        "choices":  ["من 0-1 سنه","من1-2 سنه","من 3-4 سنه","من 4-5 سنه","من 5-6 سنه","اكثر من 6 سنوات"]
 
     },
     {
