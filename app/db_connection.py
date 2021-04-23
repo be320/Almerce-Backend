@@ -35,7 +35,11 @@ def db_connect():
         record = cursor.fetchone()
         print("You are connected to - ", record, "\n")
 
+    cursor.execute("select category_1 from toys_shop.categories")
+    category_1_records = cursor.fetchall()            
+
         get_clicked_data(cursor)
+
 
 
 
