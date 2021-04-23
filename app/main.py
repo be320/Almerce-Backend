@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 from .product_event import product_event_details
 from .order_completed import order_completed_details
-from .db_connection import category_1
+from .category import get_categories
 from .db_connection import db_connect
 
 
@@ -28,15 +28,7 @@ messages = [
     {
         "message": {"TextField": "ايه هي المهارات اللي عايز اللعبة تنميها عند الطفل باللعبة ؟"},
         "elementType": "ChoiceTemplate",
-        "choices": [
-            "كتب تعليميه وسلاسل قصصية",
-            "كروت تخاطب",
-            "العاب خارجية وتجهيزات",
-            "العاب ترفيهيه",
-            "كتب مونتسوري",
-            "أدوات مونتسوري",
-             "العاب تنمية المهارات"
-             ]
+        "choices": get_categories()
 
     },
     {
