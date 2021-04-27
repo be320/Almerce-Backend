@@ -27,7 +27,6 @@ def hotEncode_category_2():
     #print(s)
     return s
 
-
 def hotEncode_category_3():
     postgreSQL_select_Query = "select distinct category_3 from toys_shop.categories WHERE category_3 IS NOT NULL;"
     categories = load_categories(postgreSQL_select_Query)
@@ -38,7 +37,6 @@ def hotEncode_category_3():
     #print(s)
     return s
     
-
 def hotEncode_categories():
     c1 = hotEncode_category_1()
     c1_names=c1.columns.values.tolist()

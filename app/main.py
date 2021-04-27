@@ -12,7 +12,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 
 messages = [
     {
-        "message": {"TextField": " اهلا بيك، انا لسة تحت الانشاء فسألك شوية اسئلة كدة عشان اعرف اساعدك..يلا نبدأ؟ ممكن اعرف سن الطفل اللي هيلعب باللعبة ؟"},
+        "message": {"TextField": " اهلا بيك، انا لسة تحت الانشاء فهسألك شوية اسئلة كدة عشان اعرف اساعدك..يلا نبدأ؟ ممكن اعرف سن الطفل اللي هيلعب باللعبة ؟"},
         "elementType": "ChoiceTemplate",
         "choices":  ["اكثر من 6 سنوات","من 5-6 سنه","من 4-5 سنه","من 3-4 سنه","من1-2 سنه","من 0-1 سنه"],
         "choiceType":"age"
@@ -115,10 +115,21 @@ def sendText():
         data["status"] = 'success'
         if data["choiceType"] == "category1":
             data["choices"]=get_categories1()
+
         elif data["choiceType"] == "category2":
-            data["choices"]=get_categories2(choice) 
+            category_2_records =get_categories2(choice)
+            if not category_2_records:
+                data["choices"]=["NONE"]
+            else:
+                data["choices"]=category_2_records
+
         elif data["choiceType"] == "category3":
-            data["choices"]=get_categories3(choice) 
+            category_3_records =get_categories3(choice)
+            if not category_3_records:
+                data["choices"]=["NONE"]
+            else:
+                data["choices"]=category_3_records
+
 
     else:
         data = messages[0]
