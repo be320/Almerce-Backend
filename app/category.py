@@ -1,7 +1,55 @@
-def get_categories:
-    cursor.execute("select category_1 from toys_shop.categories")
-    category_1_records = cursor.fetchall()      
-    category_1 =[]
-    for row in category_1_records:
-    category_1.append(row[0])
-    return category_1
+from .db_connection import Database
+
+def get_categories1():
+    db=Database()
+    query = "select distinct category_1 from toys_shop.categories WHERE category_1 IS NOT NULL;"
+    category_1_records = Database.select_rows_dict_cursor(db,query)
+    category_1_records.append("Skip")
+    return (category_1_records)
+
+def get_categories2(choice):
+    print(choice)
+    db=Database()
+    if choice=="Skip":
+        query = "select distinct category_2 from toys_shop.categories WHERE category_2 is NOT NULL ;"
+    else:
+        query = "select distinct category_2 from toys_shop.categories WHERE category_1 = ' "+choice+" ' AND NOT NULL;"
+    category_2_records = Database.select_rows_dict_cursor(db,query)
+    category_2_records.append("Skip")
+    return (category_2_records)
+
+def get_categories3(choice):
+    db=Database()
+    if choice=="Skip":
+        query = "select distinct category_3 from toys_shop.categories WHERE category_3 is NOT NULL ;"
+    else:
+        query = "select distinct category_3 from toys_shop.categories WHERE category_2 = ' "+choice+" ' AND NOT NULL;"
+    category_3_records = Database.select_rows_dict_cursor(db,query)
+    category_3_records.append("Skip")
+    return (category_3_records)
+
+
+
+
+     
+
+
+# def get_categories(cursor):
+#     cursor.execute("select distinct category_1 from toys_shop.categories;")
+#     category_1_records = cursor.fetchall()   
+#     print(category_1_records)   
+#     category_1 =["Skip"]
+#     print(category_1_records)
+   
+#     for row in category_1_records:
+#         category_1.append(row[0])
+#     @app.route('/load_category1', methods=["POST"])
+#     @cross_origin()
+#     def r():
+#         reply = {
+#      	category_1
+#         }
+#     return jsonify(reply)
+
+
+     

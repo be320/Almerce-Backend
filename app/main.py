@@ -2,65 +2,70 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 from .product_event import product_event_details
 from .order_completed import order_completed_details
-from .category import get_categories
-from .db_connection import db_connect
-
-
+from .HotEncoder import hotEncode_categories
+from .category import  *
 app = Flask(__name__)
 
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
+
 messages = [
     {
-        "message": {"TextField": " اهلا بيك، انا لسة تحت الانشاء فسألك شوية اسئلة كدة عشان اعرف اساعدك..يلا نبدأ؟\n ممكن اعرف سن الطفل اللي هيلعب باللعبة ؟"},
+        "message": {"TextField": " اهلا بيك، انا لسة تحت الانشاء فسألك شوية اسئلة كدة عشان اعرف اساعدك..يلا نبدأ؟ ممكن اعرف سن الطفل اللي هيلعب باللعبة ؟"},
         "elementType": "ChoiceTemplate",
-        "choices":  ["اكثر من 6 سنوات","من 5-6 سنه","من 4-5 سنه","من 3-4 سنه","من1-2 سنه","من 0-1 سنه"]
-
-
+        "choices":  ["اكثر من 6 سنوات","من 5-6 سنه","من 4-5 سنه","من 3-4 سنه","من1-2 سنه","من 0-1 سنه"],
+        "choiceType":"age"
     },
     {
         "message": {"TextField": "ممكن اعرف الطفل ولد و لا بنت ؟"},
         "elementType": "ChoiceTemplate",
-        "choices": ["بنت", "ولد"]
+        "choices": ["بنت", "ولد"],
+        "choiceType":"gender"
 
     },
     {
-        "message": {"TextField": "ايه هي المهارات اللي عايز اللعبة تنميها عند الطفل باللعبة ؟"},
+        "message": {"TextField": "حضرتك تحب اللعبة من اني قسم تبع القائمة الاولي ؟"},
         "elementType": "ChoiceTemplate",
-        "choices": get_categories()
-
+        "choices": [],
+        "choiceType":"category1"
     },
     {
-        "message": {"TextField": "حضرتك تحب اللعبة من اني قسم ؟"},
+        "message": {"TextField":"حضرتك تحب اللعبة من اني قسم تبع القائمة الثانية ؟"},
         "elementType": "ChoiceTemplate",
-        "choices": [
-            "كتب تعليميه وسلاسل قصصية",
-            "كروت تخاطب",
-            "العاب خارجية وتجهيزات",
-            "العاب ترفيهيه",
-            "كتب مونتسوري",
-            "أدوات مونتسوري",
-             "العاب تنمية المهارات"
-             ]
+        "choices": [],
+        "choiceType":"category2"
+    },
+        {
+        "message": {"TextField":"حضرتك تحب اللعبة من اني قسم تبع القائمة الثالثة ؟"},
+        "elementType": "ChoiceTemplate",
+        "choices": [],
+        "choiceType":"category3"
+
 
     },
     {
         "message": {"TextField": "طيب ممكن صورة او صور  للمنتج الي بتدور عليه"},
         "elementType": "MessageTemplate",
-        "choices": []
+        "choices": [],
+        "choiceType":"None"
+
 
     },
     {
         "message": {"TextField": " تمام جدا، تحب ادورلك في الاسعار من كام لكام؟"},
         "elementType": "PriceSliderTemplate",
-        "choices": []
+        "choices": [],
+        "choiceType":"None"
+
 
     },
     {
         "message": {"TextField": "انا خلاص لاقيت منتاجات مناسبة.. تحب اوريك الاقتراحات؟ "},
         "elementType": "ChoiceTemplate",
-        "choices": ["نعم"]
+        "choices": ["نعم"],
+        "choiceType":"None"
+
 
     },
     {
@@ -75,19 +80,16 @@ messages = [
                    "productParagraph": "تقوم فكرتها علي صيد السمك بالصنارة أو صيدها بالشاكوش لأن به ثقب في المنتصف فيلتقط القطع", "id": "2017"},
                   {"imgSrc": "https://safwatoys.com/image/cache/catalog/W37-67/w37-67-230x230.jpeg",
                    "ProductUrl": "https://safwatoys.com/index.php?route=product/product&path=67_113&product_id=1846", "productHeader": "سلم وثعبان وليدو خشب w37-67", "productParagraph": "لعبة 2x1 لعبة السلم والثعبان وليدو في شكل جديد مقاس 30*30 سم خامة خشبية متينه جودة أعلى تعلم الطفل العد والارقام والعمليات الحسابية بطريقة ممتعه", "id": "1846"}
-                   ]
-    },
-
-    {
-        "message": {},
-        "elementType": "StarRatingTemplate",
-        "choices": []
+                   ],
+        "choiceType":"None"
 
     },
     {
         "message": {"TextField": "متشكر علي تقيمك جدا عشان ده هيساعدني احسن من نفسي "},
         "elementType": "MessageTemplate",
-        "choices": []
+        "choices": [],
+        "choiceType":"None"
+
 
     },
 ]
@@ -97,10 +99,12 @@ messages = [
 @app.route('/sendText', methods=["POST"])
 @cross_origin()
 def sendText():
+    #hotEncode_categories()
     request_data = request.get_json()
     temp = request_data["Template"]
     index = temp["index"]
     choice = temp["message"]["TextField"]
+    choiceType = temp["choiceType"]
     print(index)
     print(choice)
     data = {}
@@ -109,6 +113,13 @@ def sendText():
         data["serverSide"] = True
         data["index"] = index
         data["status"] = 'success'
+        if data["choiceType"] == "category1":
+            data["choices"]=get_categories1()
+        elif data["choiceType"] == "category2":
+            data["choices"]=get_categories2(choice) 
+        elif data["choiceType"] == "category3":
+            data["choices"]=get_categories3(choice) 
+
     else:
         data = messages[0]
         data["message"] = "هناك عطل"
@@ -116,6 +127,7 @@ def sendText():
         data["serverSide"] = True
         data["status"] = 'BAD REQUEST'
     print(data)
+
     return jsonify(data)
 
 
@@ -233,29 +245,23 @@ def track():
     else:
         return ""
 
-
-# Load data from database to be used in model
-@app.route('/load_data', methods=["GET"])
-def load_data():
-    db_connect()
-    data = {}
-    data["reply"] = "Working!!!!!------------aaaaaaa"
-    data["status"] = 'success'
-    return jsonify(data)
-
-
+# # Load data from database to be used in model
+# @app.route('/load_data', methods=["GET"])
+# def load_data():
+#     db_connect()
+#     data = {}
+#     data["reply"] = "Working!!!!!------------aaaaaaa"
+#     data["status"] = 'success'
+#     return jsonify(data)
 
 # A welcome message to test our server
-
-
 @app.route('/')
 @cross_origin()
 def index():
     return "<h1>Welcome to our server !!</h1>"
 
+
 # A welcome message to test our server
-
-
 @app.route('/productcards', methods=["POST"])
 @cross_origin()
 def recommend():
