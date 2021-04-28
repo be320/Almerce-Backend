@@ -99,7 +99,7 @@ messages = [
 @app.route('/sendText', methods=["POST"])
 @cross_origin()
 def sendText():
-    #hotEncode_categories()
+    hotEncode_categories()
     request_data = request.get_json()
     temp = request_data["Template"]
     index = temp["index"]

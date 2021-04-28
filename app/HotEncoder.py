@@ -24,7 +24,6 @@ def hotEncode_category_2():
     for row in categories:
         data.append(row[0])
     s=pd.get_dummies(data)
-    #print(s)
     return s
 
 def hotEncode_category_3():
@@ -34,14 +33,21 @@ def hotEncode_category_3():
     for row in categories:
         data.append(row[0])
     s=pd.get_dummies(data)
-    #print(s)
     return s
     
 def hotEncode_categories():
     c1 = hotEncode_category_1()
     c1_names=c1.columns.values.tolist()
     c1=c1.to_numpy()
-    print (c1_names)
+    c1_str = []
+    for arr in c1:
+        s = ""
+        for i in arr:
+            s+=str(i)
+        c1_str.append(s)
+    print(c1_str)            
+    
+    #print (c1_names)
     print (c1)
     c2 = hotEncode_category_2()
     c3 = hotEncode_category_3()
