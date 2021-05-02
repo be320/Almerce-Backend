@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 from .product_event import product_event_details
 from .order_completed import order_completed_details
-from .HotEncoder import hotEncode_categories
+from .HotEncoder import *
 from .category import  *
 app = Flask(__name__)
 
@@ -48,7 +48,7 @@ messages = [
         "message": {"TextField": "طيب ممكن صورة او صور  للمنتج الي بتدور عليه"},
         "elementType": "MessageTemplate",
         "choices": [],
-        "choiceType":"None"
+        "choiceType":"IMG"
 
 
     },
@@ -99,7 +99,7 @@ messages = [
 @app.route('/sendText', methods=["POST"])
 @cross_origin()
 def sendText():
-    hotEncode_categories()
+    get_similar_products()
     request_data = request.get_json()
     temp = request_data["Template"]
     index = temp["index"]
@@ -121,6 +121,7 @@ def sendText():
             if not category_2_records:
                 data["choices"]=["NONE"]
             else:
+                category_2_records.append("NONE")
                 data["choices"]=category_2_records
 
         elif data["choiceType"] == "category3":
@@ -128,8 +129,8 @@ def sendText():
             if not category_3_records:
                 data["choices"]=["NONE"]
             else:
+                category_3_records.append("NONE")
                 data["choices"]=category_3_records
-
 
     else:
         data = messages[0]
@@ -276,6 +277,7 @@ def index():
 @app.route('/productcards', methods=["POST"])
 @cross_origin()
 def recommend():
+    #recommendation = get_recommendations()
     reply = {
         "elementType":"ProductCardTemplate",
         "cards":[{ "imgSrc" :"https://safwatoys.com/image/cache/catalog/W50-2/x122c5919-e115-43fc-a6c8-d283ce0ffb72-230x230.jpg.pagespeed.ic.ZrBiS-lubg.webp","ProductUrl":"https://safwatoys.com/index.php?route=product/product&product_id=1049","productHeader":"لوحة تلوين بالرمل W50-2","productParagraph":"لوحة معها رمل ملون يقوم الطفل بلصقها ف مكانها المناسب حسب الصورة الملونة لتتحول الي صوره ملونه بشكل مميز ينمي العضلات الدقيقة واصابع اليد ومهارات التحكم تزيد ثقة الطفل بنفسه متاح عدة اشكال تساعد في تمييز الطفل للالوان وتنميه مهاره المطابقة مناسبه للاطفال فرط الحركه مناسب لسن 4 سنين"
