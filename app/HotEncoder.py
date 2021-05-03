@@ -5,6 +5,9 @@ import math
 import numpy as np
 import pandas as pd
 
+maxPrice = 0
+minPrice = 0
+
 def load_data_db(query):
     db=Database()
     result = Database.select_rows_dict_cursor(db,query)
@@ -21,7 +24,7 @@ def hotEncode_category(i):
 
 
 def hotEncode_categories():
-
+    global maxPrice,minPrice
     c1,c1_names = hotEncode_category(1)
     c1=c1.to_numpy()
     c1_str = []
@@ -66,50 +69,44 @@ def hotEncode_categories():
     query = "select product_id,categories_name,price from toys_shop.products;"
     products = load_data_db(query)
 
-    encoded_categories = []
+    data = []
     prices = []
     for product in products:
         s = ""
         s = str(product[1])
         product[1]=d[s]
-        encoded_categories.append(product[1])
+        row = list(map(int, product[1]))
+        row.append(product[2])
         prices.append(product[2])
+        data.append(row)
     maxPrice = max(prices)
     minPrice = min(prices)
-    combined = np.vstack((encoded_categories,prices)).T
-    return combined
+    return data
 
 def get_similar_products():
     data = hotEncode_categories()            
-
     N_QUERY_RESULT = 25
     nbrs = NearestNeighbors(n_neighbors=N_QUERY_RESULT, algorithm = 'brute',metric=custom_metric).fit(data)
 
-    s = "000010000000000000000000000000000000000"
+    # s = "000010000000000000000000000000000000000"
    
-    distances, indices = nbrs.kneighbors([[s,35.0]])
+    distances, indices = nbrs.kneighbors([[0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,35.0]])
     similar_image_indices = indices.reshape(-1)
     print(similar_image_indices)
-    for i in similar_image_indices:
-         print(data[i])
+    print(distances)
+    # for i in similar_image_indices:
+    #      print(data[i])
 
 def custom_metric(X1,X2):
-
-    cat1 = format(X1[0],"#045")[2:]
-    cat2 = format(X2[0],"#045")[2:]
-    print(cat1)
-    cat1= list(map(int, cat1))
-    cat2= list(map(int, cat2))
-    price1 = int(X1[1])
-    price2 = int(X2[1])
-    print(cat1)
-    print(cat2)
+    cat1 = X1[:(len(X1)-1)]
+    cat2 = X2[:(len(X2)-1)]
+    price1 = X1[len(X1)-1]
+    price2 = X2[len(X2)-1]
     category_distance = distance.jaccard(cat1, cat2)
-    print(category_distance)
-    price_distance = abs(price1 - price2)
+#    print(category_distance)
+    price_distance = abs( (price1-minPrice)/(maxPrice - minPrice) - (price2-minPrice)/(maxPrice - minPrice) )
     dist = math.sqrt(price_distance**2 + category_distance**2)
     return dist
-    return 0
 
 
 # from .db_connection import Database
