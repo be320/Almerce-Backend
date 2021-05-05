@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
-
+user_parameters = {}
 
 messages = [
     {
@@ -81,7 +81,7 @@ messages = [
                   {"imgSrc": "https://safwatoys.com/image/cache/catalog/W37-67/w37-67-230x230.jpeg",
                    "ProductUrl": "https://safwatoys.com/index.php?route=product/product&path=67_113&product_id=1846", "productHeader": "سلم وثعبان وليدو خشب w37-67", "productParagraph": "لعبة 2x1 لعبة السلم والثعبان وليدو في شكل جديد مقاس 30*30 سم خامة خشبية متينه جودة أعلى تعلم الطفل العد والارقام والعمليات الحسابية بطريقة ممتعه", "id": "1846"}
                    ],
-        "choiceType":"None"
+        "choiceType":"ShowRecommendations"
 
     },
     {
@@ -94,19 +94,16 @@ messages = [
     },
 ]
 
-
 # Text Messages
 @app.route('/sendText', methods=["POST"])
 @cross_origin()
 def sendText():
-    get_similar_products()
+    global user_parameters
     request_data = request.get_json()
     temp = request_data["Template"]
     index = temp["index"]
     choice = temp["message"]["TextField"]
     choiceType = temp["choiceType"]
-    print(index)
-    print(choice)
     data = {}
     if index >= 0 & index < len(messages):
         data = messages[index]
@@ -117,6 +114,7 @@ def sendText():
             data["choices"]=get_categories1()
 
         elif data["choiceType"] == "category2":
+            user_parameters['category1']=choice
             category_2_records =get_categories2(choice)
             if not category_2_records:
                 data["choices"]=["NONE"]
@@ -125,6 +123,7 @@ def sendText():
                 data["choices"]=category_2_records
 
         elif data["choiceType"] == "category3":
+            user_parameters['category2']=choice
             category_3_records =get_categories3(choice)
             if not category_3_records:
                 data["choices"]=["NONE"]
@@ -132,6 +131,19 @@ def sendText():
                 category_3_records.append("NONE")
                 data["choices"]=category_3_records
 
+        elif data["choiceType"] == "IMG":
+            user_parameters['category3']=choice
+        
+        elif data["choiceType"] == "IMG":
+            user_parameters['category3']=choice
+
+        elif data["choiceType"] == "ShowRecommendations":
+            get_similar_products(user_parameters)
+            recommendations = get_recommendations()
+            if(recommendations):
+                data['cards']= recommendations
+
+       
     else:
         data = messages[0]
         data["message"] = "هناك عطل"
@@ -225,6 +237,7 @@ def sendpriceRange():
     price = temp["price"]
     print(index)
     print(price)
+    user_parameters['price']=price
     data = {}
     if index >= 0 & index < len(messages):
         data = messages[index]
@@ -277,7 +290,6 @@ def index():
 @app.route('/productcards', methods=["POST"])
 @cross_origin()
 def recommend():
-    #recommendation = get_recommendations()
     reply = {
         "elementType":"ProductCardTemplate",
         "cards":[{ "imgSrc" :"https://safwatoys.com/image/cache/catalog/W50-2/x122c5919-e115-43fc-a6c8-d283ce0ffb72-230x230.jpg.pagespeed.ic.ZrBiS-lubg.webp","ProductUrl":"https://safwatoys.com/index.php?route=product/product&product_id=1049","productHeader":"لوحة تلوين بالرمل W50-2","productParagraph":"لوحة معها رمل ملون يقوم الطفل بلصقها ف مكانها المناسب حسب الصورة الملونة لتتحول الي صوره ملونه بشكل مميز ينمي العضلات الدقيقة واصابع اليد ومهارات التحكم تزيد ثقة الطفل بنفسه متاح عدة اشكال تساعد في تمييز الطفل للالوان وتنميه مهاره المطابقة مناسبه للاطفال فرط الحركه مناسب لسن 4 سنين"

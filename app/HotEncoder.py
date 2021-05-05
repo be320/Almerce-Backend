@@ -7,7 +7,10 @@ import pandas as pd
 
 maxPrice = 0
 minPrice = 0
+recommendations=[]
 
+def get_recommendations():
+    return recommendations
 def load_data_db(query):
     db=Database()
     result = Database.select_rows_dict_cursor(db,query)
@@ -23,7 +26,7 @@ def hotEncode_category(i):
     return s,categories
 
 
-def hotEncode_categories():
+def hotEncode_categories(user_parameters):
     global maxPrice,minPrice
     c1,c1_names = hotEncode_category(1)
     c1=c1.to_numpy()
@@ -81,20 +84,46 @@ def hotEncode_categories():
         data.append(row)
     maxPrice = max(prices)
     minPrice = min(prices)
-    return data
 
-def get_similar_products():
-    data = hotEncode_categories()            
-    N_QUERY_RESULT = 25
+    fixed_user_parameters = {}
+    s =   "المتجر " + "> " + str(user_parameters['category1']) + " > " + str(user_parameters['category2']) + " > " + str(user_parameters['category3']) + " "
+    s = s.replace("> NONE ","")
+    fixed_user_parameters['category']=d[str(s)]
+    mean_price = (min(user_parameters['price'])+max(user_parameters['price']))/2
+    fixed_user_parameters['mean_price'] = mean_price
+
+    return data,fixed_user_parameters,products
+
+def get_similar_products(user_parameters):
+    data,fixed_user_parameters,products = hotEncode_categories(user_parameters)
+    N_QUERY_RESULT = 5
     nbrs = NearestNeighbors(n_neighbors=N_QUERY_RESULT, algorithm = 'brute',metric=custom_metric).fit(data)
 
-    # s = "000010000000000000000000000000000000000"
-   
-    distances, indices = nbrs.kneighbors([[0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,35.0]])
-    similar_image_indices = indices.reshape(-1)
-    print(similar_image_indices)
-    print(distances)
-    # for i in similar_image_indices:
+    user_input= list(fixed_user_parameters['category'])
+    user_input.append(fixed_user_parameters['mean_price'])
+    distances, indices = nbrs.kneighbors([user_input])
+    similar_product_indices = indices.reshape(-1)
+
+    global recommendations
+    for i in similar_product_indices:
+        R = {}   
+        id = products[i][0]
+        imgSrc_query = "select image_name from toys_shop.products where product_id = "+str(id)+";"
+        R['imgSrc'] = load_data_db(imgSrc_query)
+        productHeader_query = "select name from toys_shop.products where product_id = "+str(id)+";"
+        R['productHeader'] = load_data_db(productHeader_query)
+        nn = str(R['productHeader'][0][0])
+        n = nn.replace(" ","-")
+        print(n)
+        R['ProductUrl']= "https://www.magaya.world/product/"+n+"/"
+        productParagraph_query = "select description from toys_shop.products where product_id = "+str(id)+";"
+        R['productParagraph'] = load_data_db(productParagraph_query)
+        R['id']= id
+        recommendations.append(R)
+
+    # print(similar_product_indices)
+    # print(distances)
+    # for i in similar_product_indices:
     #      print(data[i])
 
 def custom_metric(X1,X2):
@@ -103,7 +132,6 @@ def custom_metric(X1,X2):
     price1 = X1[len(X1)-1]
     price2 = X2[len(X2)-1]
     category_distance = distance.jaccard(cat1, cat2)
-#    print(category_distance)
     price_distance = abs( (price1-minPrice)/(maxPrice - minPrice) - (price2-minPrice)/(maxPrice - minPrice) )
     dist = math.sqrt(price_distance**2 + category_distance**2)
     return dist
