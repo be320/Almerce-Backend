@@ -16,71 +16,86 @@ def load_data_db(query):
     result = Database.select_rows_dict_cursor(db,query)
     return result
 
-def hotEncode_category(i):
-    postgreSQL_select_Query = "select category_"+str(i)+" from toys_shop.categories;"
+def hotEncode_category():
+    postgreSQL_select_Query = "select * from toys_shop.categories;"
     categories = load_data_db(postgreSQL_select_Query)
-    data = []
+    c1_names = []
+    c2_names = []
+    c3_names = []
     for row in categories:
-        data.append(row[0])
-    s=pd.get_dummies(data)
-    return s,categories
+        c1_names.append(row[0])
+        c2_names.append(row[1])
+        c3_names.append(row[2])
+  
+    c1=pd.get_dummies(c1_names) # c1 is the hot encoding of category1 names
+    c2=pd.get_dummies(c2_names) # c2 is the hot encoding of category2 names
+    c3=pd.get_dummies(c3_names) # c3 is the hot encoding of category3 names
+
+    return c1,c2,c3 # return the 3 categories hot encoded 
 
 
 def hotEncode_categories(user_parameters):
-    global maxPrice,minPrice
-    c1,c1_names = hotEncode_category(1)
+    global maxPrice,minPrice 
+    c1,c2,c3= hotEncode_category()
+    
+    # c1,c2,c3 are the hotencode category1,category2,category3
+    # Array of arrays, each array consits of many strings, each string is a bit (0 or 1)
+    # ex: c1 = [['1','0','0'],['0','0','1']] 
     c1=c1.to_numpy()
-    c1_str = []
-    for arr in c1:
-        s = ""
-        for i in arr:
-            s+=str(i)
-        c1_str.append(s)
-
-    c2,c2_names = hotEncode_category(2)
     c2=c2.to_numpy()
-    c2_str = []
-    for arr in c2:
-        s = ""
-        for i in arr:
-            s+=str(i)
-        c2_str.append(s)
-
-    c3,c3_names = hotEncode_category(3)
     c3=c3.to_numpy()
+
+    # c1_str,c2_str,c3_str are 1D arrays of strings, each string is the hot encode of a category consisting of multiple bits
+    # ex: c1_str = ['100','001'] 
+    c1_str = []
+    c2_str = []
     c3_str = []
-    for arr in c3:
-        s = ""
-        for i in arr:
-            s+=str(i)
+
+    # categories_names is [['المتجر > كتب تعليمية وسلاسل قصصية > بطاقات '], ['المتجر > تنمية المهارات > العاب العلوم ']]
+    postgreSQL_select_Query = "select distinct categories_name from toys_shop.products;"
+    categories_names = load_data_db(postgreSQL_select_Query)
+
+    # c_names is ['المتجر > كتب تعليمية وسلاسل قصصية > بطاقات ', 'المتجر > تنمية المهارات > العاب العلوم '] of all 38 (till now) distinct categories_name 
+    c_names = []
+
+    # c_codes is ['100100000001','01000001000010','0001000010000100'] where each element = category1 code + category2 + category3 code
+    c_codes = []
+
+    for i in range (len(c1)):
+        s=""
+        for bit in c1[i]:
+            s+=str(bit)
+        c1_str.append(s)
+        s=""
+        for bit in c2[i]:
+            s+=str(bit)
+        c2_str.append(s)
+        s=""
+        for bit in c3[i]:
+            s+=str(bit)
         c3_str.append(s)
 
-    c_names = []
-    for i in range(0,len(c3)):
-        c_names_str = ""
-        c_names_str =   "المتجر " + ">" + str(c1_names[i][0]) + ">" + str(c2_names[i][0]) + ">" + str(c3_names[i][0])
-        c_names_str = c_names_str.replace(">None","")
-        c_names.append(c_names_str)
+        c_names.append(categories_names[i][0])
+        c_codes.append(c1_str[i]+c2_str[i]+c3_str[i])
 
-    c_codes = []
-    for i in range(0,len(c3)):
-        c_code_str = ""
-        c_code_str =  ''.join(map(str, c1[i]))  + ''.join(map(str, c2[i]))  + ''.join(map(str, c3[i]))
-        c_codes.append(c_code_str)
     d = dict(zip(c_names, c_codes))  
-
+            
     query = "select product_id,categories_name,price from toys_shop.products;"
     products = load_data_db(query)
 
     data = []
     prices = []
     for product in products:
+        # hot encode each category name and append it into "row" list
         s = ""
         s = str(product[1])
-        product[1]=d[s]
-        row = list(map(int, product[1]))
+        product[1]=d[s] #0001000000000010000000000000000000000000
+        row = list(map(int, product[1])) #[0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        #append price to "row" making it last item in it
         row.append(product[2])
+        #prices (bara el for loop) collects all product's prices to be able to calculate max and min price
         prices.append(product[2])
+        #data (bara el for loop) array of arrays
         data.append(row)
     maxPrice = max(prices)
     minPrice = min(prices)
@@ -105,20 +120,24 @@ def get_similar_products(user_parameters):
     similar_product_indices = indices.reshape(-1)
 
     global recommendations
+    recommendations=[]
     for i in similar_product_indices:
         R = {}   
         id = products[i][0]
-        imgSrc_query = "select image_name from toys_shop.products where product_id = "+str(id)+";"
-        R['imgSrc'] = load_data_db(imgSrc_query)
-        productHeader_query = "select name from toys_shop.products where product_id = "+str(id)+";"
-        R['productHeader'] = load_data_db(productHeader_query)
+        query = "select name,image_name,description from toys_shop.products where product_id = "+str(id)+";"
+        query_result = load_data_db(query)
+        print(query_result)
+        R['productHeader'] = query_result[0][0]
+        R['imgSrc'] = query_result[0][1]
+        if query_result[0][2] == None:
+            R['productParagraph'] = ""
+        else:
+            R['productParagraph'] = query_result[0][2]
+
+        R['id']= id
         nn = str(R['productHeader'][0][0])
         n = nn.replace(" ","-")
-        print(n)
         R['ProductUrl']= "https://www.magaya.world/product/"+n+"/"
-        productParagraph_query = "select description from toys_shop.products where product_id = "+str(id)+";"
-        R['productParagraph'] = load_data_db(productParagraph_query)
-        R['id']= id
         recommendations.append(R)
 
     # print(similar_product_indices)
@@ -135,177 +154,3 @@ def custom_metric(X1,X2):
     price_distance = abs( (price1-minPrice)/(maxPrice - minPrice) - (price2-minPrice)/(maxPrice - minPrice) )
     dist = math.sqrt(price_distance**2 + category_distance**2)
     return dist
-
-
-# from .db_connection import Database
-# from sklearn.neighbors import NearestNeighbors
-# from sklearn.neighbors import DistanceMetric
-# from scipy.spatial import distance
-# from sklearn import preprocessing
-# import pandas as pd
-# import numpy as np
-# import math 
-
-# user_parameters=[]
-# fixed_user_parameters = []
-# recommendations_index = []
-# recommendations = []
-
-# def load_data_db(query):
-#     db=Database()
-#     result = Database.select_rows_dict_cursor(db,query)
-#     return result
-
-# def hotEncode_category_1():
-#     postgreSQL_select_Query = "select category_1 from toys_shop.categories;"
-#     categories = load_data_db(postgreSQL_select_Query)
-#     data = []
-#     for row in categories:
-#         data.append(row[0])
-#     s=pd.get_dummies(data)
-#     return s,categories
-
-
-# def hotEncode_category_2():
-#     postgreSQL_select_Query = "select category_2 from toys_shop.categories;"
-#     categories = load_data_db(postgreSQL_select_Query)
-#     data = []
-#     for row in categories:
-#         data.append(row[0])
-#     s=pd.get_dummies(data)
-#     return s,categories
-
-# def hotEncode_category_3():
-#     postgreSQL_select_Query = "select category_3 from toys_shop.categories;"
-#     categories = load_data_db(postgreSQL_select_Query)
-#     data = []
-#     for row in categories:
-#         data.append(row[0])
-#     s=pd.get_dummies(data)
-#     return s,categories
-
-# def send_category1(user_category1):
-#     user_parameters.append(user_category1)
-# def send_category2(user_category2):
-#     user_parameters.append(user_category2)
-# def send_category3(user_category3):
-#     user_parameters.append(user_category3)
-# def send_price(price):
-#     for p in price:
-#         user_parameters.append(p)
-#     hotEncode_categories()
-# def get_recommendations():
-#     return recommendations
-
-
-
-   
-# def hotEncode_categories():
-#     c1,c1_names = hotEncode_category_1()
-#     c1=c1.to_numpy()
-#     c1_str = []
-#     for arr in c1:
-#         s = ""
-#         for i in arr:
-#             s+=str(i)
-#         c1_str.append(s)
-
-#     c2,c2_names = hotEncode_category_2()
-#     c2=c2.to_numpy()
-#     c2_str = []
-#     for arr in c2:
-#         s = ""
-#         for i in arr:
-#             s+=str(i)
-#         c2_str.append(s)
-
-#     c3,c3_names = hotEncode_category_3()
-#     c3=c3.to_numpy()
-#     c3_str = []
-#     for arr in c3:
-#         s = ""
-#         for i in arr:
-#             s+=str(i)
-#         c3_str.append(s)
-
-#     c_names = []
-#     for i in range(0,len(c3)):
-#         c_names_str = ""
-#         c_names_str =   "المتجر " + ">" + str(c1_names[i][0]) + ">" + str(c2_names[i][0]) + ">" + str(c3_names[i][0])
-#         c_names_str = c_names_str.replace(">None","")
-#         c_names.append(c_names_str)
-
-#     c_codes = []
-#     for i in range(0,len(c3)):
-#         c_code_str = ""
-#         c_code_str =  ''.join(map(str, c1[i]))  + ''.join(map(str, c2[i]))  + ''.join(map(str, c3[i]))
-#         c_codes.append(c_code_str)
-#     d = dict(zip(c_names, c_codes))  
-
-#     query = "select product_id,categories_name,price from toys_shop.products;"
-#     products = load_data_db(query)
- 
-#     encoded_categories = []
-#     prices = []
-#     for product in products:
-#         s = ""
-#         s = str(product[1])
-#         product[1]=d[s]
-#         encoded_categories.append(product[1])
-#         prices.append(product[2])
-
-#     maxPrice = max(prices)
-#     minPrice = min(prices)
-
-#     s =   "المتجر " + "> " + str(user_parameters[0]) + " > " + str(user_parameters[1]) + " > " + str(user_parameters[2]) + " "
-#     s = s.replace("> NONE ","")
-#     fixed_user_parameters.append(d[str(s)])
-#     mean_price = (user_parameters[-1]+user_parameters[-2])/2
-#     fixed_user_parameters.append(mean_price)
-    
-#     similarities = custom_metric(fixed_user_parameters[1],fixed_user_parameters[0], minPrice, maxPrice, prices, encoded_categories)
-#     while len(recommendations_index) < 5:
-#         min_value = min(similarities)
-#         values = np.array(similarities)
-#         min_indices = np.where(values == min_value)[0]
-#         for index in min_indices:
-#             recommendations_index.append(index)
-#             similarities[index]+=1000.0
-
-#     for i in recommendations_index:
-#         R = []   
-#         id = products[i][0]
-#         imgSrc_query = "select image_name from toys_shop.products where product_id = "+str(id)+";"
-#         imgSrc_result = load_data_db(imgSrc_query)
-#         R.append(imgSrc_result)
-#         # ProductUrl_query=
-#         # ProductUrl_result=load_data_db(ProductUrl_query)
-#         # R.append(img_result)
-#         productHeader_query = "select name from toys_shop.products where product_id = "+str(id)+";"
-#         productHeader_result = load_data_db(productHeader_query)
-#         R.append(productHeader_result)
-#         productParagraph_query = "select description from toys_shop.products where product_id = "+str(id)+";"
-#         productParagraph_result = load_data_db(productParagraph_query)
-#         R.append(productParagraph_result)
-#         R.append(id)
-#         recommendations.append(R)
-#     print(recommendations_index)
-#     print(recommendations)
-
-
-
-# def custom_metric(user_price, user_category, minPrice, maxPrice, prices, encoded_categories):
-#     normalized_user_price = (user_price-minPrice)/(maxPrice-minPrice)
-#     for i in range(0,len(encoded_categories)):
-#         encoded_categories[i] = list(map(int, encoded_categories[i]))
-#     user_category= list(map(int,user_category))
-#     similarity_distance = []
-#     for i in range(0,len(prices)):
-#         price_distance = abs(normalized_user_price - (prices[i] - minPrice) / (maxPrice - minPrice))
-#         category_distance = distance.jaccard(encoded_categories[i], user_category)
-#         dist = math.sqrt(price_distance**2+category_distance**2)
-#         similarity_distance.append(dist)
-#     return similarity_distance
-    
-    
- 

@@ -27,7 +27,7 @@ class Database:
                     dbname=self.dbname
                 )
             except psycopg2.DatabaseError as e:
-                print(error(e))
+                print(e)
                 raise e
             finally:
                 print("Connection opened successfully.")

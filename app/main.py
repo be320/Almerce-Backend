@@ -4,6 +4,8 @@ from .product_event import product_event_details
 from .order_completed import order_completed_details
 from .HotEncoder import *
 from .category import  *
+import timeit, functools
+
 app = Flask(__name__)
 
 cors = CORS(app)
@@ -133,15 +135,13 @@ def sendText():
 
         elif data["choiceType"] == "IMG":
             user_parameters['category3']=choice
-        
-        elif data["choiceType"] == "IMG":
-            user_parameters['category3']=choice
 
         elif data["choiceType"] == "ShowRecommendations":
-            get_similar_products(user_parameters)
+            print(timeit.timeit(functools.partial(get_similar_products,user_parameters), number=1))
+            print("Time Taken To Execute get_similar_products (seconds):")
             recommendations = get_recommendations()
             if(recommendations):
-                data['cards']= recommendations
+                data['cards'] = recommendations
 
        
     else:
@@ -150,7 +150,6 @@ def sendText():
         data["elementType"] = "MessageTemplate"
         data["serverSide"] = True
         data["status"] = 'BAD REQUEST'
-    print(data)
 
     return jsonify(data)
 
