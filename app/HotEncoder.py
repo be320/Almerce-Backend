@@ -19,13 +19,10 @@ def load_data_db(query):
 def hotEncode_category():
     postgreSQL_select_Query = "select * from toys_shop.categories;"
     categories = load_data_db(postgreSQL_select_Query)
-    c1_names = []
-    c2_names = []
-    c3_names = []
-    for row in categories:
-        c1_names.append(row[0])
-        c2_names.append(row[1])
-        c3_names.append(row[2])
+    categories = np.array(categories)
+    c1_names = categories[:,0].copy()
+    c2_names = categories[:,1].copy()
+    c3_names = categories[:,2].copy()
   
     c1=pd.get_dummies(c1_names) # c1 is the hot encoding of category1 names
     c2=pd.get_dummies(c2_names) # c2 is the hot encoding of category2 names
