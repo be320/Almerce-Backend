@@ -15,32 +15,18 @@ def load_data_db(query):
     db=Database()
     result = Database.select_rows_dict_cursor(db,query)
     return result
-
-def hotEncode_category():
-    postgreSQL_select_Query = "select * from toys_shop.categories;"
-    categories = load_data_db(postgreSQL_select_Query)
-    categories = np.array(categories)
-    c1_names = categories[:,0].copy()
-    c2_names = categories[:,1].copy()
-    c3_names = categories[:,2].copy()
-  
-    c1=pd.get_dummies(c1_names) # c1 is the hot encoding of category1 names
-    c2=pd.get_dummies(c2_names) # c2 is the hot encoding of category2 names
-    c3=pd.get_dummies(c3_names) # c3 is the hot encoding of category3 names
-
-    return c1,c2,c3 # return the 3 categories hot encoded 
-
+ 
 
 def hotEncode_categories(user_parameters):
     global maxPrice,minPrice 
-    c1,c2,c3= hotEncode_category()
+    #c1,c2,c3= hotEncode_category()
     
     # c1,c2,c3 are the hotencode category1,category2,category3
     # Array of arrays, each array consits of many strings, each string is a bit (0 or 1)
     # ex: c1 = [['1','0','0'],['0','0','1']] 
-    c1=c1.to_numpy()
-    c2=c2.to_numpy()
-    c3=c3.to_numpy()
+    c1= np.load('c1_file.npy')
+    c2=np.load('c2_file.npy')
+    c3=np.load('c3_file.npy')
 
     # c1_str,c2_str,c3_str are 1D arrays of strings, each string is the hot encode of a category consisting of multiple bits
     # ex: c1_str = ['100','001'] 
@@ -48,9 +34,15 @@ def hotEncode_categories(user_parameters):
     c2_str = []
     c3_str = []
 
-    # categories_names is [['المتجر > كتب تعليمية وسلاسل قصصية > بطاقات '], ['المتجر > تنمية المهارات > العاب العلوم ']]
-    postgreSQL_select_Query = "select distinct categories_name from toys_shop.products;"
-    categories_names = load_data_db(postgreSQL_select_Query)
+    # categories_names is ['المتجر > كتب تعليمية وسلاسل قصصية > بطاقات ', 'المتجر > تنمية المهارات > العاب العلوم ']
+    query = "select product_id,categories_name,price from toys_shop.products;"
+    products = load_data_db(query)  
+    products_np = np.array(products)
+    categories_name = np.unique(products_np[:, 1].copy())
+    print(categories_name.shape)
+  
+    # postgreSQL_select_Query = "select distinct categories_name from toys_shop.products;"
+    # categories_names = load_data_db(postgreSQL_select_Query)
 
     # c_names is ['المتجر > كتب تعليمية وسلاسل قصصية > بطاقات ', 'المتجر > تنمية المهارات > العاب العلوم '] of all 38 (till now) distinct categories_name 
     c_names = []
@@ -72,13 +64,10 @@ def hotEncode_categories(user_parameters):
             s+=str(bit)
         c3_str.append(s)
 
-        c_names.append(categories_names[i][0])
+        c_names.append(categories_name[i])
         c_codes.append(c1_str[i]+c2_str[i]+c3_str[i])
 
     d = dict(zip(c_names, c_codes))  
-            
-    query = "select product_id,categories_name,price from toys_shop.products;"
-    products = load_data_db(query)
 
     data = []
     prices = []
@@ -132,7 +121,7 @@ def get_similar_products(user_parameters):
             R['productParagraph'] = query_result[0][2]
 
         R['id']= id
-        nn = str(R['productHeader'][0][0])
+        nn = str(query_result[0][0])
         n = nn.replace(" ","-")
         R['ProductUrl']= "https://www.magaya.world/product/"+n+"/"
         recommendations.append(R)
