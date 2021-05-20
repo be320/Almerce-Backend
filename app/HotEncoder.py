@@ -8,9 +8,14 @@ import pandas as pd
 maxPrice = 0
 minPrice = 0
 recommendations=[]
+error = 0.0
 
 def get_recommendations():
     return recommendations
+
+def get_error():
+    return error
+
 def load_data_db(query):
     db=Database()
     result = Database.select_rows_dict_cursor(db,query)
@@ -35,14 +40,25 @@ def hotEncode_categories(user_parameters):
     c3_str = []
 
     # categories_names is ['المتجر > كتب تعليمية وسلاسل قصصية > بطاقات ', 'المتجر > تنمية المهارات > العاب العلوم ']
+    # products_np = np.load('products_file.npy') 
+    # print(type(products_np))
+    # p1= products_np[:,0].astype(np.int)
+    # p2 = products_np[:,1]
+    # p1 = np.reshape(p1, (-1, 1))
+    # p2 = np.reshape(p2, (-1, 1))
+    # p=np.concatenate((p1,p2),axis=1)
+    # print(p)
+    # p3 = products_np[:,2].astype(np.float)
+    # categories_name = np.unique(products_np[:, 1].copy())
+    # print((categories_name[:5]))
+  
     query = "select product_id,categories_name,price from toys_shop.products;"
     products = load_data_db(query)  
+    #print((products[:5]))
     products_np = np.array(products)
+    #print((products_np[:5]))
     categories_name = np.unique(products_np[:, 1].copy())
-    print(categories_name.shape)
-  
-    # postgreSQL_select_Query = "select distinct categories_name from toys_shop.products;"
-    # categories_names = load_data_db(postgreSQL_select_Query)
+    #print((categories_name[:5]))
 
     # c_names is ['المتجر > كتب تعليمية وسلاسل قصصية > بطاقات ', 'المتجر > تنمية المهارات > العاب العلوم '] of all 38 (till now) distinct categories_name 
     c_names = []
@@ -71,6 +87,7 @@ def hotEncode_categories(user_parameters):
 
     data = []
     prices = []
+
     for product in products:
         # hot encode each category name and append it into "row" list
         s = ""
@@ -103,6 +120,17 @@ def get_similar_products(user_parameters):
     user_input= list(fixed_user_parameters['category'])
     user_input.append(fixed_user_parameters['mean_price'])
     distances, indices = nbrs.kneighbors([user_input])
+    print("Similarity distances")
+    print(distances)
+
+    print("error")
+    global error
+    sum2=0
+    for distance in distances[0]:
+        sum2+=distance
+    error=sum2/len(distances) 
+    print(error)
+
     similar_product_indices = indices.reshape(-1)
 
     global recommendations
@@ -136,7 +164,7 @@ def custom_metric(X1,X2):
     cat2 = X2[:(len(X2)-1)]
     price1 = X1[len(X1)-1]
     price2 = X2[len(X2)-1]
-    category_distance = distance.jaccard(cat1, cat2)
-    price_distance = abs( (price1-minPrice)/(maxPrice - minPrice) - (price2-minPrice)/(maxPrice - minPrice) )
+    category_distance = distance.jaccard(cat1, cat2) #measure dissamilarity between categories
+    price_distance = abs( (price1-minPrice)/(maxPrice - minPrice) - (price2-minPrice)/(maxPrice - minPrice) ) #normalize mean prices: price 1 and price 2
     dist = math.sqrt(price_distance**2 + category_distance**2)
     return dist

@@ -5,7 +5,9 @@ from .order_completed import order_completed_details
 from .HotEncoder import *
 from .category import  *
 import timeit, functools
-import numpy as np
+import os
+import schedule
+import time
 
 app = Flask(__name__)
 
@@ -13,23 +15,41 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 user_parameters = {}
 
+if os.stat('KNN_Test_Cases.csv').st_size == 0:
+    df = pd.DataFrame(columns=['category 1','category 2','category 3','mean price', 'error %','execution time (s)'])
+else:
+    df = pd.read_csv('KNN_Test_Cases.csv')
+
+#pre processing done once in the beginning
 @app.before_first_request
 def before_first_request():
-    postgreSQL_select_Query = "select * from toys_shop.categories;"
-    categories = load_data_db(postgreSQL_select_Query)
-    categories = np.array(categories)
-    c1_names = categories[:,0].copy()
-    c2_names = categories[:,1].copy()
-    c3_names = categories[:,2].copy()
-  
-    c1=pd.get_dummies(c1_names).to_numpy() # c1 is the hot encoding of category1 names
-    c2=pd.get_dummies(c2_names).to_numpy() # c2 is the hot encoding of category2 names
-    c3=pd.get_dummies(c3_names).to_numpy() # c3 is the hot encoding of category3 names
+    while True:
+        try:
+            # hot encoding the 3 categories
+            postgreSQL_select_Query = "select * from toys_shop.categories;"
+            categories = load_data_db(postgreSQL_select_Query)
+            categories = np.array(categories)
+            c1_names = categories[:,0].copy()
+            c2_names = categories[:,1].copy()
+            c3_names = categories[:,2].copy()
+        
+            c1=pd.get_dummies(c1_names).to_numpy() # c1 is the hot encoding of category1 names
+            c2=pd.get_dummies(c2_names).to_numpy() # c2 is the hot encoding of category2 names
+            c3=pd.get_dummies(c3_names).to_numpy() # c3 is the hot encoding of category3 names
 
-    np.save('c1_file', c1)
-    np.save('c2_file', c2)
-    np.save('c3_file', c3)
-    
+            np.save('c1_file', c1)
+            np.save('c2_file', c2)
+            np.save('c3_file', c3)
+            
+            # fetch products from database and saves it into file
+            query = "select product_id,categories_name,price from toys_shop.products;"
+            products = load_data_db(query)
+            np.save('products_file',products)
+            break 
+        except Exception as e:
+            print("Connection to database failed")
+
+
 messages = [
 {
     "message": {"TextField": " اهلا بيك، انا لسة تحت الانشاء فهسألك شوية اسئلة كدة عشان اعرف اساعدك..يلا نبدأ؟ ممكن اعرف سن الطفل اللي هيلعب باللعبة ؟"},
@@ -61,7 +81,6 @@ messages = [
     "elementType": "ChoiceTemplate",
     "choices": [],
     "choiceType":"category3"
-
 
 },
 {
@@ -155,12 +174,26 @@ def sendText():
             user_parameters['category3']=choice
 
         elif data["choiceType"] == "ShowRecommendations":
-            print(timeit.timeit(functools.partial(get_similar_products,user_parameters), number=1))
-            print("Time Taken To Execute get_similar_products (seconds):")
+            global Knn_exec_time #time to execute functon
+            Knn_exec_time = timeit.timeit(functools.partial(get_similar_products,user_parameters), number=1) # calling get_similar_products(user_parameters) in HotEncoder.py
+            
+            # #for generating test cases for knn method
+            # error = get_error()
+            # new_test_case ={'category 1':user_parameters['category1'],'category 2':user_parameters['category2'],
+            # 'category 3':user_parameters['category3'],'mean price':(min(user_parameters['price'])+max(user_parameters['price']))/2, 
+            # 'error %':error*100, 'execution time (s)':Knn_exec_time}
+            # global df
+            # df = df.append(new_test_case, ignore_index=True)
+            # df.to_csv('KNN_Test_Cases.csv')
+            # print(df)
+            # print(user_parameters)
+            # print(error)
+            # print("Time Taken To Execute get_similar_products (seconds): ",Knn_exec_time)
+
+            #showing product cards
             recommendations = get_recommendations()
             if(recommendations):
                 data['cards'] = recommendations
-
        
     else:
         data = messages[0]
@@ -180,7 +213,7 @@ def sendImagesList():
     index = temp["index"]
     imageList = temp["imageList"]
     print(index)
-    print(imageList)
+    #print(imageList)
     data = {}
     if index >= 0 & index < len(messages):
         data = messages[index]
@@ -193,7 +226,6 @@ def sendImagesList():
         data["elementType"] = "MessageTemplate"
         data["serverSide"] = True
         data["status"] = 'BAD REQUEST'
-    print(data)
     return jsonify(data)
 
 @app.route('/sendAudioMessage', methods=["POST"])
@@ -300,7 +332,6 @@ def track():
 @app.route('/')
 @cross_origin()
 def index():
-    print("HIIIII")
     return "<h1>Welcome to our server !!</h1>"
 
 
