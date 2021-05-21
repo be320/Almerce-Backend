@@ -184,7 +184,7 @@ def sendText():
             # 'error %':error*100, 'execution time (s)':Knn_exec_time}
             # global df
             # df = df.append(new_test_case, ignore_index=True)
-            # df.to_csv('KNN_Test_Cases.csv')
+            # df.to_csv('KNN_Test_Cases.csv',index=False)
             # print(df)
             # print(user_parameters)
             # print(error)
