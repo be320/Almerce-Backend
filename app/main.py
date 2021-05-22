@@ -33,7 +33,7 @@ def before_first_request():
             c2_names = categories[:,1].copy()
             c3_names = categories[:,2].copy()
         
-            c1=pd.get_dummies(c1_names).to_numpy() # c1 is the hot encoding of category1 names
+            c1=pd.get_dummies(c1_names).to_numpy() # c1 is the hot encoding of category1 names ex: c1 = [['1','0','0'],['0','0','1']] 
             c2=pd.get_dummies(c2_names).to_numpy() # c2 is the hot encoding of category2 names
             c3=pd.get_dummies(c3_names).to_numpy() # c3 is the hot encoding of category3 names
 

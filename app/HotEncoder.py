@@ -32,6 +32,8 @@ def hotEncode_categories(user_parameters):
     c1= np.load('c1_file.npy')
     c2=np.load('c2_file.npy')
     c3=np.load('c3_file.npy')
+    # print("HEREEEEEEEEEEEEEEEEEEEEE")
+    # print(c1,c2,c3)
 
     # c1_str,c2_str,c3_str are 1D arrays of strings, each string is the hot encode of a category consisting of multiple bits
     # ex: c1_str = ['100','001'] 
@@ -57,11 +59,19 @@ def hotEncode_categories(user_parameters):
     #print((products[:5]))
     products_np = np.array(products)
     #print((products_np[:5]))
-    categories_name = np.unique(products_np[:, 1].copy())
+    
+    query = "select * from toys_shop.categories;"
+    categories = load_data_db(query)  
+    categories = np.array(categories)
+    # c_names is ['المتجر > كتب تعليمية وسلاسل قصصية > بطاقات ', 'المتجر > تنمية المهارات > العاب العلوم '] of all 38 (till now) distinct categories_name 
+    c_names = []  
+    for c in categories:
+        s =   "المتجر " + ">" + str(c[0]) + ">" + str(c[1]) + ">" + str(c[2]) + " "
+        s = s.replace(">None","")
+        c_names.append(s.strip())
     #print((categories_name[:5]))
 
-    # c_names is ['المتجر > كتب تعليمية وسلاسل قصصية > بطاقات ', 'المتجر > تنمية المهارات > العاب العلوم '] of all 38 (till now) distinct categories_name 
-    c_names = []
+    
 
     # c_codes is ['100100000001','01000001000010','0001000010000100'] where each element = category1 code + category2 + category3 code
     c_codes = []
@@ -80,10 +90,9 @@ def hotEncode_categories(user_parameters):
             s+=str(bit)
         c3_str.append(s)
 
-        c_names.append(categories_name[i])
         c_codes.append(c1_str[i]+c2_str[i]+c3_str[i])
-
     d = dict(zip(c_names, c_codes))  
+
 
     data = []
     prices = []
@@ -92,7 +101,7 @@ def hotEncode_categories(user_parameters):
         # hot encode each category name and append it into "row" list
         s = ""
         s = str(product[1])
-        product[1]=d[s] #0001000000000010000000000000000000000000
+        product[1]=d[s.strip()] #0001000000000010000000000000000000000000
         row = list(map(int, product[1])) #[0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         #append price to "row" making it last item in it
         row.append(product[2])
@@ -102,11 +111,14 @@ def hotEncode_categories(user_parameters):
         data.append(row)
     maxPrice = max(prices)
     minPrice = min(prices)
+    
+    df = pd.DataFrame(products)
+    df.to_csv('kmeans_products.csv',index=False)
 
     fixed_user_parameters = {}
     s =   "المتجر " + "> " + str(user_parameters['category1']) + " > " + str(user_parameters['category2']) + " > " + str(user_parameters['category3']) + " "
     s = s.replace("> NONE ","")
-    fixed_user_parameters['category']=d[str(s)]
+    fixed_user_parameters['category']=d[str(s).strip()]
     mean_price = (min(user_parameters['price'])+max(user_parameters['price']))/2
     fixed_user_parameters['mean_price'] = mean_price
 
