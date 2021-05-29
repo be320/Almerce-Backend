@@ -8,17 +8,18 @@ import timeit, functools
 import os
 import schedule
 import time
+from app.chat_based_model.sequence import chat_based_messages
+from app.image_based_model.sequence import image_based_messages
+
 
 app = Flask(__name__)
 
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
-user_parameters = {}
-
-if os.stat('KNN_Test_Cases.csv').st_size == 0:
-    df = pd.DataFrame(columns=['category 1','category 2','category 3','mean price', 'error %','execution time (s)'])
-else:
-    df = pd.read_csv('KNN_Test_Cases.csv')
+chatBased_user_parameters = {}
+Knn_exec_time = 0.0
+ImgSerch_exec_time = 0.0
+model_messages = ""
 
 #pre processing done once in the beginning
 @app.before_first_request
@@ -48,88 +49,15 @@ def before_first_request():
             break 
         except Exception as e:
             print("Connection to database failed")
+            time.sleep(2)
 
 
 messages = [
 {
-    "message": {"TextField": " اهلا بيك، انا لسة تحت الانشاء فهسألك شوية اسئلة كدة عشان اعرف اساعدك..يلا نبدأ؟ ممكن اعرف سن الطفل اللي هيلعب باللعبة ؟"},
-    "elementType": "ChoiceTemplate",
-    "choices":  ["اكثر من 6 سنوات","من 5-6 سنه","من 4-5 سنه","من 3-4 سنه","من1-2 سنه","من 0-1 سنه"],
-    "choiceType":"age"
-},
-{
-    "message": {"TextField": "ممكن اعرف الطفل ولد و لا بنت ؟"},
-    "elementType": "ChoiceTemplate",
-    "choices": ["بنت", "ولد"],
-    "choiceType":"gender"
-
-},
-{
-    "message": {"TextField": "حضرتك تحب اللعبة من اني قسم تبع القائمة الاولي ؟"},
-    "elementType": "ChoiceTemplate",
-    "choices": [],
-    "choiceType":"category1"
-},
-{
-    "message": {"TextField":"حضرتك تحب اللعبة من اني قسم تبع القائمة الثانية ؟"},
-    "elementType": "ChoiceTemplate",
-    "choices": [],
-    "choiceType":"category2"
-},
-    {
-    "message": {"TextField":"حضرتك تحب اللعبة من اني قسم تبع القائمة الثالثة ؟"},
-    "elementType": "ChoiceTemplate",
-    "choices": [],
-    "choiceType":"category3"
-
-},
-{
-    "message": {"TextField": "طيب ممكن صورة او صور  للمنتج الي بتدور عليه"},
-    "elementType": "MessageTemplate",
-    "choices": [],
-    "choiceType":"IMG"
-
-
-},
-{
-    "message": {"TextField": " تمام جدا، تحب ادورلك في الاسعار من كام لكام؟"},
-    "elementType": "PriceSliderTemplate",
-    "choices": [],
-    "choiceType":"None"
-
-
-},
-{
-    "message": {"TextField": "انا خلاص لاقيت منتاجات مناسبة.. تحب اوريك الاقتراحات؟ "},
-    "elementType": "ChoiceTemplate",
-    "choices": ["نعم"],
-    "choiceType":"None"
-
-
-},
-{
-    "elementType": "ProductCardTemplate",
-    "cards": [{"imgSrc": "https://safwatoys.com/image/cache/catalog/W50-2/x122c5919-e115-43fc-a6c8-d283ce0ffb72-230x230.jpg.pagespeed.ic.ZrBiS-lubg.webp",
-                "ProductUrl": "https://safwatoys.com/index.php?route=product/product&product_id=1049",
-                "productHeader": "لوحة تلوين بالرمل W50-2",
-                "productParagraph": "لوحة معها رمل ملون يقوم الطفل بلصقها ف مكانها المناسب حسب الصورة الملونة لتتحول الي صوره ملونه بشكل مميز ينمي العضلات الدقيقة واصابع اليد ومهارات التحكم تزيد ثقة الطفل بنفسه متاح عدة اشكال تساعد في تمييز الطفل للالوان وتنميه مهاره المطابقة مناسبه للاطفال فرط الحركه مناسب لسن 4 سنين", "id": "1049"},
-                {"imgSrc": "https://safwatoys.com/image/cache/catalog/W5-11/W5--11-228x228.jpg",
-                "ProductUrl": "https://safwatoys.com/index.php?route=product/product&path=67_106&product_id=2017",
-                "productHeader": "صيد سمك وسط W5-11",
-                "productParagraph": "تقوم فكرتها علي صيد السمك بالصنارة أو صيدها بالشاكوش لأن به ثقب في المنتصف فيلتقط القطع", "id": "2017"},
-                {"imgSrc": "https://safwatoys.com/image/cache/catalog/W37-67/w37-67-230x230.jpeg",
-                "ProductUrl": "https://safwatoys.com/index.php?route=product/product&path=67_113&product_id=1846", "productHeader": "سلم وثعبان وليدو خشب w37-67", "productParagraph": "لعبة 2x1 لعبة السلم والثعبان وليدو في شكل جديد مقاس 30*30 سم خامة خشبية متينه جودة أعلى تعلم الطفل العد والارقام والعمليات الحسابية بطريقة ممتعه", "id": "1846"}
-                ],
-    "choiceType":"ShowRecommendations"
-
-},
-{
     "message": {"TextField": "متشكر علي تقيمك جدا عشان ده هيساعدني احسن من نفسي "},
     "elementType": "MessageTemplate",
     "choices": [],
-    "choiceType":"None"
-
-
+    "choiceType":"AfterRestart"
 },
 ]
 
@@ -137,74 +65,116 @@ messages = [
 @app.route('/sendText', methods=["POST"])
 @cross_origin()
 def sendText():
-    global user_parameters
+    global chatBased_user_parameters # save user chosen category1,2 and 3
+    global model_messages # specify model chosen by user
     request_data = request.get_json()
     temp = request_data["Template"]
     index = temp["index"]
     choice = temp["message"]["TextField"]
-    choiceType = temp["choiceType"]
     data = {}
-    if index >= 0 & index < len(messages):
-        data = messages[index]
-        data["serverSide"] = True
-        data["index"] = index
-        data["status"] = 'success'
-        if data["choiceType"] == "category1":
-            data["choices"]=get_categories1()
 
-        elif data["choiceType"] == "category2":
-            user_parameters['category1']=choice
-            category_2_records =get_categories2(choice)
-            if not category_2_records:
-                data["choices"]=["NONE"]
-            else:
-                category_2_records.append("NONE")
-                data["choices"]=category_2_records
-
-        elif data["choiceType"] == "category3":
-            user_parameters['category2']=choice
-            category_3_records =get_categories3(choice)
-            if not category_3_records:
-                data["choices"]=["NONE"]
-            else:
-                category_3_records.append("NONE")
-                data["choices"]=category_3_records
-
-        elif data["choiceType"] == "IMG":
-            user_parameters['category3']=choice
-
-        elif data["choiceType"] == "ShowRecommendations":
-            global Knn_exec_time #time to execute functon
-            Knn_exec_time = timeit.timeit(functools.partial(get_similar_products,user_parameters), number=1) # calling get_similar_products(user_parameters) in HotEncoder.py
-            
-            # #for generating test cases for knn method
-            # error = get_error()
-            # new_test_case ={'category 1':user_parameters['category1'],'category 2':user_parameters['category2'],
-            # 'category 3':user_parameters['category3'],'mean price':(min(user_parameters['price'])+max(user_parameters['price']))/2, 
-            # 'error %':error*100, 'execution time (s)':Knn_exec_time}
-            # global df
-            # df = df.append(new_test_case, ignore_index=True)
-            # df.to_csv('KNN_Test_Cases.csv',index=False)
-            # print(df)
-            # print(user_parameters)
-            # print(error)
-            # print("Time Taken To Execute get_similar_products (seconds): ",Knn_exec_time)
-
-            #showing product cards
-            recommendations = get_recommendations()
-            if(recommendations):
-                data['cards'] = recommendations
-       
+    #initialising model_messages
+    if (index ==0):
+        model_messages = "chat_based_messages"
     else:
-        data = messages[0]
-        data["message"] = "هناك عطل"
-        data["elementType"] = "MessageTemplate"
-        data["serverSide"] = True
-        data["status"] = 'BAD REQUEST'
+        if(choice=="البحث عن طريق الاختيارات"):
+            model_messages = "chat_based_messages"
+        elif (choice =="البحث عن طريق الصور"):
+            model_messages = "image_based_messages"
+        elif (choice =="التحدث مع ألميرس"):
+            model_messages = "text_based_messages"
+    print(model_messages)
+    print(index)
+    #---------------------------------------------------------------
+    if model_messages == "messages":
+        if index >= 0 & index < len(messages):
+            data = messages[index]
+            data["serverSide"] = True
+            data["index"] = index
+            data["status"] = 'success'
+        else:
+            data = messages[0]
+            data["message"] = "هناك عطل"
+            data["elementType"] = "MessageTemplate"
+            data["serverSide"] = True
+            data["status"] = 'BAD REQUEST'
 
-    return jsonify(data)
+        return jsonify(data)
+        
+    elif model_messages == "chat_based_messages":
+        if index >= 0:
+            data = chat_based_messages[index%len(chat_based_messages)]
+            data["serverSide"] = True
+            data["index"] = index
+            data["status"] = 'success'
+
+            if data["choiceType"] == "category1":
+                data["choices"]=get_categories1()
+
+            elif data["choiceType"] == "category2":
+                chatBased_user_parameters['category1']=choice
+                category_2_records =get_categories2(choice)
+                if not category_2_records:
+                    data["choices"]=["NONE"]
+                else:
+                    category_2_records.append("NONE")
+                    data["choices"]=category_2_records
+
+            elif data["choiceType"] == "category3":
+                chatBased_user_parameters['category2']=choice
+                category_3_records =get_categories3(choice)
+                if not category_3_records:
+                    data["choices"]=["NONE"]
+                else:
+                    category_3_records.append("NONE")
+                    data["choices"]=category_3_records
+
+            elif data["choiceType"] == "price":
+                chatBased_user_parameters['category3']=choice  
+
+            elif data["choiceType"] == "model_type":
+                 # user doesn't want to restart
+                if choice == "لا":
+                    data = messages[0]
+                    data["serverSide"] = True
+                    data["index"] = index
+                    data["status"] = 'success'
+
+        else:
+            data = messages[0]
+            data["message"] = "هناك عطل"
+            data["elementType"] = "MessageTemplate"
+            data["serverSide"] = True
+            data["status"] = 'BAD REQUEST'
+
+        return jsonify(data)
+
+    elif model_messages == "image_based_messages":
+        if index >= 0:
+            data = image_based_messages[index%len(image_based_messages)]
+            data["serverSide"] = True
+            data["index"] = index
+            data["status"] = 'success'
+
+            if data["choiceType"] == "model_type":
+                    # user doesn't want to restart
+                if choice == "لا":
+                    data = messages[0]
+                    data["serverSide"] = True
+                    data["index"] = index
+                    data["status"] = 'success'
+
+        else:
+            data = messages[0]
+            data["message"] = "هناك عطل"
+            data["elementType"] = "MessageTemplate"
+            data["serverSide"] = True
+            data["status"] = 'BAD REQUEST'
+
+        return jsonify(data)
 
 
+#assuming this will only be used with image_based_model
 @app.route('/sendImagesList', methods=["POST"])
 @cross_origin()
 def sendImagesList():
@@ -215,11 +185,21 @@ def sendImagesList():
     print(index)
     #print(imageList)
     data = {}
-    if index >= 0 & index < len(messages):
-        data = messages[index]
+    if index >= 0 :
+        data = image_based_messages[index%len(image_based_messages)]
         data["serverSide"] = True
         data["index"] = index
         data["status"] = 'success'
+        # global ImgSerch_exec_time
+        # ImgSerch_exec_time = timeit.timeit(functools.partial(YOUR_FN_NAME,imageList), number=1) 
+        print(ImgSerch_exec_time)
+        # get recommendations produced in image_based_messages folder
+        # imageBased_recommendations = get_imageBased_recommendations()
+        # if(imageBased_recommendations):
+        #     print("imageBased_recommendations")
+        #     print(imageBased_recommendations)
+        #     data['cards'] = imageBased_recommendations
+    
     else:
         data = messages[0]
         data["message"] = "هناك عطل"
@@ -263,8 +243,12 @@ def sendchangeRating():
     print(index)
     print(rating)
     data = {}
-    if index >= 0 & index < len(messages):
-        data = messages[index]
+
+    if index >= 0 :
+        if(model_messages == "chat_based_messages"):
+            data = chat_based_messages[index%len(chat_based_messages)]  
+        elif(model_messages == "image_based_messages"):
+            data = image_based_messages[index%len(image_based_messages)]  
         data["serverSide"] = True
         data["index"] = index
         data["status"] = 'success'
@@ -277,6 +261,8 @@ def sendchangeRating():
     print(data)
     return jsonify(data)
 
+    
+#assuming this will only be used with chat_based_model
 @app.route('/sendpriceRange', methods=["POST"])
 @cross_origin()
 def sendpriceRange():
@@ -286,19 +272,57 @@ def sendpriceRange():
     price = temp["price"]
     print(index)
     print(price)
-    user_parameters['price']=price
+    chatBased_user_parameters['price']=price
     data = {}
-    if index >= 0 & index < len(messages):
-        data = messages[index]
+    if index >= 0 :
+        data = chat_based_messages[index%len(chat_based_messages)]
         data["serverSide"] = True
         data["index"] = index
         data["status"] = 'success'
+
+        # calling get_similar_products(user_parameters) in HotEncoder.py
+        global Knn_exec_time
+        Knn_exec_time = timeit.timeit(functools.partial(get_similar_products,chatBased_user_parameters), number=1) 
+        print(Knn_exec_time)
+
+        # get recommendations produced in HotEncoder.py
+        chatBased_recommendations = get_chatBased_recommendations()
+        if(chatBased_recommendations):
+            print("chatBased_recommendations")
+            print(chatBased_recommendations)
+            data['cards'] = chatBased_recommendations
+        
+                    #time to execute functon
+                # global Knn_exec_time
+                # Knn_exec_time = timeit.timeit(functools.partial(get_similar_products,user_parameters), number=1) # calling get_similar_products(user_parameters) in HotEncoder.py
+                # print(Knn_exec_time)
+                # #for generating test cases for knn method
+                # error = get_error()
+                # new_test_case ={'category 1':user_parameters['category1'],'category 2':user_parameters['category2'],
+                # 'category 3':user_parameters['category3'],'mean price':(min(user_parameters['price'])+max(user_parameters['price']))/2, 
+                # 'error %':error*100, 'execution time (s)':Knn_exec_time}
+                # global df
+                # df = df.append(new_test_case, ignore_index=True)
+                # df.to_csv('KNN_Test_Cases.csv',index=False)
+                # print(df)
+                # print(user_parameters)
+                # print(error)
+                # print("Time Taken To Execute get_similar_products (seconds): ",Knn_exec_time)
+
+                #showing product cards
+                # recommendations = get_recommendations()
+                # if(recommendations):
+                #     print("recommendations")
+                #     print(recommendations)
+                #     data['cards'] = recommendations
+
     else:
         data = messages[0]
         data["message"] = "هناك عطل"
         data["elementType"] = "MessageTemplate"
         data["serverSide"] = True
         data["status"] = 'BAD REQUEST'
+
     print(data)
     return jsonify(data)
 

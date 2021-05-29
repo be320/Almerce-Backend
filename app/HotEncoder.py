@@ -10,7 +10,7 @@ minPrice = 0
 recommendations=[]
 error = 0.0
 
-def get_recommendations():
+def get_chatBased_recommendations():
     return recommendations
 
 def get_error():
