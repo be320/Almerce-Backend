@@ -2,7 +2,6 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 from .product_event import product_event_details
 from .order_completed import order_completed_details
-from .category import  *
 import timeit, functools
 import os
 import schedule
@@ -10,7 +9,7 @@ import schedule
 from app.chat_based_model.sequence import chat_based_messages
 from app.chat_based_model.preprocessing import chat_based_model_preprocessing
 from app.chat_based_model.HotEncoder import *
-
+from app.chat_based_model.knn import *
 from app.image_based_model.sequence import image_based_messages
 
 
