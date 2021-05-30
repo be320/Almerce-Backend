@@ -1,4 +1,4 @@
-from .db_connection import Database
+from app.db_connection import Database
 from sklearn.neighbors import NearestNeighbors
 from scipy.spatial import distance
 import math 
@@ -56,9 +56,6 @@ def hotEncode_categories(user_parameters):
   
     query = "select product_id,categories_name,price from toys_shop.products;"
     products = load_data_db(query)  
-    #print((products[:5]))
-    products_np = np.array(products)
-    #print((products_np[:5]))
     
     query = "select * from toys_shop.categories;"
     categories = load_data_db(query)  
@@ -112,8 +109,8 @@ def hotEncode_categories(user_parameters):
     maxPrice = max(prices)
     minPrice = min(prices)
     
-    df = pd.DataFrame(products)
-    df.to_csv('kmeans_products.csv',index=False)
+    # df = pd.DataFrame(products)
+    # df.to_csv('kmeans_products.csv',index=False)
 
     fixed_user_parameters = {}
     s =   "المتجر " + "> " + str(user_parameters['category1']) + " > " + str(user_parameters['category2']) + " > " + str(user_parameters['category3']) + " "

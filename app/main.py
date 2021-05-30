@@ -2,13 +2,15 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 from .product_event import product_event_details
 from .order_completed import order_completed_details
-from .HotEncoder import *
 from .category import  *
 import timeit, functools
 import os
 import schedule
-import time
+
 from app.chat_based_model.sequence import chat_based_messages
+from app.chat_based_model.preprocessing import chat_based_model_preprocessing
+from app.chat_based_model.HotEncoder import *
+
 from app.image_based_model.sequence import image_based_messages
 
 
@@ -21,36 +23,11 @@ Knn_exec_time = 0.0
 ImgSerch_exec_time = 0.0
 model_messages = ""
 
-#pre processing done once in the beginning
+#pre processing run once after every flask run
 @app.before_first_request
 def before_first_request():
-    while True:
-        try:
-            # hot encoding the 3 categories
-            postgreSQL_select_Query = "select * from toys_shop.categories;"
-            categories = load_data_db(postgreSQL_select_Query)
-            categories = np.array(categories)
-            c1_names = categories[:,0].copy()
-            c2_names = categories[:,1].copy()
-            c3_names = categories[:,2].copy()
-        
-            c1=pd.get_dummies(c1_names).to_numpy() # c1 is the hot encoding of category1 names ex: c1 = [['1','0','0'],['0','0','1']] 
-            c2=pd.get_dummies(c2_names).to_numpy() # c2 is the hot encoding of category2 names
-            c3=pd.get_dummies(c3_names).to_numpy() # c3 is the hot encoding of category3 names
-
-            np.save('c1_file', c1)
-            np.save('c2_file', c2)
-            np.save('c3_file', c3)
+    chat_based_model_preprocessing() # hot encoding the 3 categories & fetch products from database and saves it into file
             
-            # fetch products from database and saves it into file
-            query = "select product_id,categories_name,price from toys_shop.products;"
-            products = load_data_db(query)
-            np.save('products_file',products)
-            break 
-        except Exception as e:
-            print("Connection to database failed")
-            time.sleep(2)
-
 #this message show to the user when an error occur
 messages=[
     {
@@ -256,12 +233,12 @@ def sendpriceRange():
         data["index"] = index
         data["status"] = 'success'
 
-        # calling get_similar_products(user_parameters) in HotEncoder.py
+        # calling get_similar_products(user_parameters)
         global Knn_exec_time
         Knn_exec_time = timeit.timeit(functools.partial(get_similar_products,chatBased_user_parameters), number=1) 
         print(Knn_exec_time)
 
-        # get recommendations produced in HotEncoder.py
+        # get recommendations produced 
         chatBased_recommendations = get_chatBased_recommendations()
         if(chatBased_recommendations):
             print("chatBased_recommendations")
