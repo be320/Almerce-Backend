@@ -51,16 +51,15 @@ def before_first_request():
             print("Connection to database failed")
             time.sleep(2)
 
-
-messages = [
-{
+#this message show to the user when an error occur
+messages=[
+    {
     "message": {"TextField": "متشكر علي تقيمك جدا عشان ده هيساعدني احسن من نفسي "},
     "elementType": "MessageTemplate",
     "choices": [],
     "choiceType":"AfterRestart"
 },
 ]
-
 # Text Messages
 @app.route('/sendText', methods=["POST"])
 @cross_origin()
@@ -83,27 +82,10 @@ def sendText():
             model_messages = "image_based_messages"
         elif (choice =="التحدث مع ألميرس"):
             model_messages = "text_based_messages"
-    print(model_messages)
-    print(index)
     #---------------------------------------------------------------
-    if model_messages == "messages":
-        if index >= 0 & index < len(messages):
-            data = messages[index]
-            data["serverSide"] = True
-            data["index"] = index
-            data["status"] = 'success'
-        else:
-            data = messages[0]
-            data["message"] = "هناك عطل"
-            data["elementType"] = "MessageTemplate"
-            data["serverSide"] = True
-            data["status"] = 'BAD REQUEST'
-
-        return jsonify(data)
-        
-    elif model_messages == "chat_based_messages":
-        if index >= 0:
-            data = chat_based_messages[index%len(chat_based_messages)]
+    if model_messages == "chat_based_messages":
+        if index >= 0 & index < len(chat_based_messages):
+            data = chat_based_messages[index]
             data["serverSide"] = True
             data["index"] = index
             data["status"] = 'success'
@@ -132,14 +114,6 @@ def sendText():
             elif data["choiceType"] == "price":
                 chatBased_user_parameters['category3']=choice  
 
-            elif data["choiceType"] == "model_type":
-                 # user doesn't want to restart
-                if choice == "لا":
-                    data = messages[0]
-                    data["serverSide"] = True
-                    data["index"] = index
-                    data["status"] = 'success'
-
         else:
             data = messages[0]
             data["message"] = "هناك عطل"
@@ -150,19 +124,11 @@ def sendText():
         return jsonify(data)
 
     elif model_messages == "image_based_messages":
-        if index >= 0:
-            data = image_based_messages[index%len(image_based_messages)]
+        if index >= 0 & index < len(image_based_messages):
+            data = image_based_messages[index]
             data["serverSide"] = True
             data["index"] = index
             data["status"] = 'success'
-
-            if data["choiceType"] == "model_type":
-                    # user doesn't want to restart
-                if choice == "لا":
-                    data = messages[0]
-                    data["serverSide"] = True
-                    data["index"] = index
-                    data["status"] = 'success'
 
         else:
             data = messages[0]
@@ -185,8 +151,8 @@ def sendImagesList():
     print(index)
     #print(imageList)
     data = {}
-    if index >= 0 :
-        data = image_based_messages[index%len(image_based_messages)]
+    if index >= 0 & index < len(image_based_messages):
+        data = image_based_messages[index]
         data["serverSide"] = True
         data["index"] = index
         data["status"] = 'success'
@@ -243,24 +209,34 @@ def sendchangeRating():
     print(index)
     print(rating)
     data = {}
-
-    if index >= 0 :
-        if(model_messages == "chat_based_messages"):
-            data = chat_based_messages[index%len(chat_based_messages)]  
-        elif(model_messages == "image_based_messages"):
-            data = image_based_messages[index%len(image_based_messages)]  
-        data["serverSide"] = True
-        data["index"] = index
-        data["status"] = 'success'
-    else:
-        data = messages[0]
-        data["message"] = "هناك عطل"
-        data["elementType"] = "MessageTemplate"
-        data["serverSide"] = True
-        data["status"] = 'BAD REQUEST'
-    print(data)
-    return jsonify(data)
-
+    if(model_messages == "chat_based_messages"):
+        if index >= 0 & index < len(chat_based_messages):
+            data = chat_based_messages[index]   
+            data["serverSide"] = True
+            data["index"] = index
+            data["status"] = 'success'
+        else:
+            data = messages[0]
+            data["message"] = "هناك عطل"
+            data["elementType"] = "MessageTemplate"
+            data["serverSide"] = True
+            data["status"] = 'BAD REQUEST'
+        print(data)
+        return jsonify(data)
+    elif(model_messages == "image_based_messages"):
+        if index >= 0 & index < len(image_based_messages):
+            data = image_based_messages[index] 
+            data["serverSide"] = True
+            data["index"] = index
+            data["status"] = 'success'
+        else:
+            data = messages[0]
+            data["message"] = "هناك عطل"
+            data["elementType"] = "MessageTemplate"
+            data["serverSide"] = True
+            data["status"] = 'BAD REQUEST'
+        print(data)
+        return jsonify(data)
     
 #assuming this will only be used with chat_based_model
 @app.route('/sendpriceRange', methods=["POST"])
@@ -274,8 +250,8 @@ def sendpriceRange():
     print(price)
     chatBased_user_parameters['price']=price
     data = {}
-    if index >= 0 :
-        data = chat_based_messages[index%len(chat_based_messages)]
+    if index >= 0 & index < len(chat_based_messages):
+        data = chat_based_messages[index]
         data["serverSide"] = True
         data["index"] = index
         data["status"] = 'success'

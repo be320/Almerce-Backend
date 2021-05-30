@@ -33,4 +33,10 @@ image_based_messages = [
     "choices":  ["نعم","لا"],
     "choiceType":"restart"
 },
+{
+    "message": {"TextField": "متشكر علي تقيمك جدا عشان ده هيساعدني احسن من نفسي "},
+    "elementType": "MessageTemplate",
+    "choices": [],
+    "choiceType":"AfterRestart"
+},
 ]
