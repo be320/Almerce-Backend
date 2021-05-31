@@ -5,13 +5,14 @@ from .order_completed import order_completed_details
 import timeit, functools
 import os
 
-from app.chat_based_model.sequence import chat_based_messages
-from app.chat_based_model.preprocessing import chat_based_model_preprocessing
-from app.chat_based_model.HotEncoder import *
-from app.chat_based_model.knn import *
-from app.image_based_model.sequence import image_based_messages
-from app.image_based_model.imageModel import predictImages
-from app.image_based_model.imageModel import get_imageBased_recommendations
+from app.chat_based_model.Sequence import chat_based_messages
+from app.chat_based_model.Preprocessing import chat_based_model_preprocessing
+from app.chat_based_model.UserParameters import *
+from app.chat_based_model.Knn import *
+from .category import *
+#from app.image_based_model.sequence import image_based_messages
+#from app.image_based_model.imageModel import predictImages
+#from app.image_based_model.imageModel import get_imageBased_recommendations
 
 
 app = Flask(__name__)

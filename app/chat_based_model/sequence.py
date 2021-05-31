@@ -61,7 +61,7 @@ chat_based_messages = [
 {
     "message": {"TextField":"تحب نساعدك بحاجة تاني؟"},
     "elementType": "ChoiceTemplate",
-    "choices":  ["نعم","لا"],
+    "choices":  ["نعم"],
     "choiceType":"restart"
 },
 {
