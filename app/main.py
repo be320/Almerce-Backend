@@ -11,6 +11,8 @@ from app.chat_based_model.preprocessing import chat_based_model_preprocessing
 from app.chat_based_model.HotEncoder import *
 from app.chat_based_model.knn import *
 from app.image_based_model.sequence import image_based_messages
+from app.image_based_model.imageModel import predictImages
+from app.image_based_model.imageModel import get_imageBased_recommendations
 
 
 app = Flask(__name__)
@@ -125,22 +127,23 @@ def sendImagesList():
     index = temp["index"]
     imageList = temp["imageList"]
     print(index)
-    #print(imageList)
+    # print(imageList)
     data = {}
     if index >= 0 & index < len(image_based_messages):
         data = image_based_messages[index]
         data["serverSide"] = True
         data["index"] = index
         data["status"] = 'success'
-        # global ImgSerch_exec_time
-        # ImgSerch_exec_time = timeit.timeit(functools.partial(YOUR_FN_NAME,imageList), number=1) 
+        global ImgSerch_exec_time
+        ImgSerch_exec_time = timeit.timeit(functools.partial(predictImages,imageList[0]), number=1) 
         print(ImgSerch_exec_time)
         # get recommendations produced in image_based_messages folder
-        # imageBased_recommendations = get_imageBased_recommendations()
-        # if(imageBased_recommendations):
-        #     print("imageBased_recommendations")
-        #     print(imageBased_recommendations)
-        #     data['cards'] = imageBased_recommendations
+        imageBased_recommendations = get_imageBased_recommendations()
+        print(imageBased_recommendations)
+        if(imageBased_recommendations):
+            print("imageBased_recommendations")
+            print(imageBased_recommendations)
+            data['cards'] = imageBased_recommendations
     
     else:
         data = messages[0]
