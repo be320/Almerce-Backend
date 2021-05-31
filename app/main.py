@@ -4,7 +4,6 @@ from .product_event import product_event_details
 from .order_completed import order_completed_details
 import timeit, functools
 import os
-import schedule
 
 from app.chat_based_model.sequence import chat_based_messages
 from app.chat_based_model.preprocessing import chat_based_model_preprocessing

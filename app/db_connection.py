@@ -44,3 +44,7 @@ class Database:
         cur.close()
         return records
 
+def load_data_db(query):
+    db=Database()
+    result = Database.select_rows_dict_cursor(db,query)
+    return result
