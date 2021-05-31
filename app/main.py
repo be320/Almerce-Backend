@@ -10,9 +10,9 @@ from app.chat_based_model.Preprocessing import chat_based_model_preprocessing
 from app.chat_based_model.UserParameters import *
 from app.chat_based_model.Knn import *
 from .category import *
-#from app.image_based_model.sequence import image_based_messages
-#from app.image_based_model.imageModel import predictImages
-#from app.image_based_model.imageModel import get_imageBased_recommendations
+from app.image_based_model.sequence import image_based_messages
+from app.image_based_model.imageModel import predictImages
+from app.image_based_model.imageModel import get_imageBased_recommendations
 
 
 app = Flask(__name__)
