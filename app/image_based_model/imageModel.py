@@ -1,5 +1,9 @@
 from app.db_connection import Database
+from keras.models import load_model
+import tensorflow as tf
+import numpy as np
 
+imageModel = load_model('./AlmerceRankNetV2.h5')
 id_results = []
 recommendations=[]
 
@@ -14,6 +18,10 @@ def load_data_db(query):
 
 def predictImages(imageList):
     global id_results
+    image = tf.image.decode_jpeg(imageList, channels=3)
+    image = tf.image.convert_image_dtype(image, tf.float32)
+    image = tf.image.resize(image, (224,224))
+    image = np.expand_dims(image, axis=0)
     id_results = ['18','49','127','144','145']
     get_similar_products()
 
