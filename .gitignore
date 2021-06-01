@@ -1,2 +1,4 @@
 pyvenv.cfg
 venv/Lib
+.vscode
+models

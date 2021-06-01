@@ -143,7 +143,6 @@ def sendImagesList():
             print("imageBased_recommendations")
             print(imageBased_recommendations)
             data['cards'] = imageBased_recommendations
-    
     else:
         data = messages[0]
         data["message"] = "هناك عطل"
