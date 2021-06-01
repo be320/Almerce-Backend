@@ -106,14 +106,6 @@ def data_preprocessing():
     with open('encoded_clust.pkl', 'wb') as handle:
             pickle.dump(encoded_clust, handle)
 
-    # #save the data for kmeans list [0,1,0,0,0,0,1,.....,0,0.15] to a file
-    # with open('data_kmeans.pkl', 'wb') as handle:
-    #     pickle.dump(data, handle)
-
-    # #save the products for kmeans list [148,'00100001000000001',0.15] to a file
-    # with open('products_kmeans.pkl', 'wb') as handle:
-    #     pickle.dump(products, handle)
-
 def hot_encode_products(products, cat1_zeroes, cat2_zeroes, cat3_zeroes, maxPrice, minPrice):
     with open('dictionary.pkl', 'rb') as handle:
         dictionary = pickle.load(handle)
