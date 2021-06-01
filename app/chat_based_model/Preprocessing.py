@@ -2,12 +2,12 @@ from .UserParameters import *
 import time
 import pickle
 from ..db_connection import load_data_db
+from .Kmeans import kmeans
 
 def chat_based_model_preprocessing():
     while True:
         try:
             hot_encode_three_categories()
-            save_database_products_to_file()
             data_preprocessing()
             break 
         except Exception as e:
@@ -66,10 +66,6 @@ def data_preprocessing():
 
     query = "select product_id,categories_name,price from toys_shop.products where price <= 3000;"
     products = load_data_db(query)  
-    
-    with open('dictionary.pkl', 'rb') as handle:
-        dictionary = pickle.load(handle)
-
     data = []
     prices = []
     for product in products:
@@ -86,7 +82,42 @@ def data_preprocessing():
     cat1_zeroes = '0' * c_len[0]
     cat2_zeroes = '0' * c_len[1]
     cat3_zeroes = '0' * c_len[2]
+    data, products = hot_encode_products(products, cat1_zeroes, cat2_zeroes, cat3_zeroes, maxPrice, minPrice)
+    #save the data list [0,1,0,0,0,0,1,.....,0,0.15] to a file
+    with open('data.pkl', 'wb') as handle:
+        pickle.dump(data, handle)
+    #save the products list [148,'00100001000000001',0.15] to a file
+    with open('products.pkl', 'wb') as handle:
+        pickle.dump(products, handle)
+    #clust represents the product array (its an array of product arrays each product array is of a specific cluster)
+    clust = kmeans()
+    encoded_clust = []
+    encoded_clust.append(cat_string_to_list(clust[0]))
+    encoded_clust.append(cat_string_to_list(clust[1]))
+    encoded_clust.append(cat_string_to_list(clust[2]))
+    encoded_clust.append(cat_string_to_list(clust[3]))
+    encoded_clust.append(cat_string_to_list(clust[4]))
+    encoded_clust.append(cat_string_to_list(clust[5]))
+    #save the clustered data representing the products
+    with open('clust.pkl', 'wb') as handle:
+            pickle.dump(clust, handle)
 
+    #save the encoded cluster data representing the data
+    with open('encoded_clust.pkl', 'wb') as handle:
+            pickle.dump(encoded_clust, handle)
+
+    # #save the data for kmeans list [0,1,0,0,0,0,1,.....,0,0.15] to a file
+    # with open('data_kmeans.pkl', 'wb') as handle:
+    #     pickle.dump(data, handle)
+
+    # #save the products for kmeans list [148,'00100001000000001',0.15] to a file
+    # with open('products_kmeans.pkl', 'wb') as handle:
+    #     pickle.dump(products, handle)
+
+def hot_encode_products(products, cat1_zeroes, cat2_zeroes, cat3_zeroes, maxPrice, minPrice):
+    with open('dictionary.pkl', 'rb') as handle:
+        dictionary = pickle.load(handle)
+    data = []
     for product in products:
         # hot encode each category name and append it into "row" list
         s = ""
@@ -101,23 +132,21 @@ def data_preprocessing():
         else:
             product[1]=dictionary[categories[1]] + dictionary[categories[2]] + dictionary[categories[3]]
         row = list(map(int, product[1])) #[0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        #normalize prices
+        product[2] = (product[2] - minPrice) / (maxPrice - minPrice)
         #append price to "row" making it last item in it
-        row.append((product[2] - minPrice) / (maxPrice - minPrice))
+        row.append(product[2])
         #data (bara el for loop) array of arrays
         data.append(row)
-    #save the data list [0,1,0,0,0,0,1,.....,0,0.15] to a file
-    with open('data.pkl', 'wb') as handle:
-        pickle.dump(data, handle)
-    #save the products list [148,'00100001000000001',0.15] to a file
-    with open('products.pkl', 'wb') as handle:
-        pickle.dump(products, handle)
+    return data, products
 
 
-
-
-
-def save_database_products_to_file():
-    query = "select product_id,categories_name,price from toys_shop.products where price <= 3000;"
-    products = load_data_db(query)
-    np.save('products_file',products)
-
+def cat_string_to_list(products):
+    data = []
+    for product in products:
+        row = list(map(int, product[1])) #[0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        #append price to "row" making it last item in it
+        row.append(product[2])
+        #data (bara el for loop) array of arrays
+        data.append(row)
+    return data
