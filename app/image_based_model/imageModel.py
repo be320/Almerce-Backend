@@ -4,16 +4,19 @@ from keras.models import load_model
 import tensorflow as tf
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
+from keras.applications.vgg16 import preprocess_input
+from keras.applications.vgg16 import VGG16
 import base64
 import imageio
 
-with open('./app/image_based_model/models/Ranknet_features_v2.npy', 'rb') as f:
+with open('./app/image_based_model/resources/VGG16_features.npy', 'rb') as f:
       img_vector_features = np.load(f)
 
-with open('./app/image_based_model/models/products_map.npy', 'rb') as f:
+with open('./app/image_based_model/resources/products_map_satr.npy', 'rb') as f:
     data_map = np.load(f)
+    
+imageModel = VGG16(weights='imagenet', include_top=False, pooling='max')
 
-imageModel = load_model('./app/image_based_model/models/AlmerceRankNet.h5')
 id_results = []
 recommendations=[]
 
@@ -24,7 +27,11 @@ def load_data_db(query):
     return result
 
 def predictImages(imageList):
+    
     global id_results
+    id_results = []
+    global recommendations
+    recommendations = []
     if 'base64,' in imageList["imageURL"]:
         image = imageList["imageURL"].split('base64,')[1]
     image = base64.b64decode(image)
@@ -32,15 +39,18 @@ def predictImages(imageList):
     image = tf.image.convert_image_dtype(image, tf.float32)
     image = tf.image.resize(image, (224,224))
     image = np.expand_dims(image, axis=0)
-    print(image.shape)
-    embedding = imageModel([image,image,image])
+    img = np.array(image)
+    image = preprocess_input(img)
+    outembedding = imageModel.predict(image)
+    embedding = np.array(outembedding)
+    embedding = embedding.flatten()
     N_QUERY_RESULT = 5
-    print(embedding.shape)
-    features = img_vector_features.reshape(850,4096)
-    print(features.shape)
+    print("------------EMBEDDING---------\n")
+    print(embedding)
+    features = img_vector_features.reshape(2253,512)
     nbrs = NearestNeighbors(n_neighbors=N_QUERY_RESULT,metric="cosine").fit(features)
     
-    distances, indices = nbrs.kneighbors(embedding)
+    distances, indices = nbrs.kneighbors([embedding])
     similar_image_indices = indices.reshape(-1)
     topFive_results = []
 
@@ -48,9 +58,9 @@ def predictImages(imageList):
         ind = similar_image_indices[j]
         fileName = data_map[ind]
         topFive_results.append(fileName[0])
-
+        
+    print(topFive_results)
     id_results = topFive_results
-    print("these are the images suggested\n"+str(id_results))
     get_similar_products()
 
 
@@ -61,7 +71,6 @@ def get_similar_products():
         R = {}   
         query = "select name,image_name,description from toys_shop.products where product_id = "+str(id)+";"
         query_result = load_data_db(query)
-        print(query_result)
         R['productHeader'] = query_result[0][0]
         R['imgSrc'] = query_result[0][1]
         if query_result[0][2] == None:
