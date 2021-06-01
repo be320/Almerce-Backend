@@ -7,7 +7,6 @@ from sklearn.neighbors import NearestNeighbors
 from keras.applications.vgg16 import preprocess_input
 from keras.applications.vgg16 import VGG16
 import base64
-import imageio
 
 with open('./app/image_based_model/resources/VGG16_features.npy', 'rb') as f:
       img_vector_features = np.load(f)
@@ -36,13 +35,14 @@ def predictImages(imageList):
         image = imageList["imageURL"].split('base64,')[1]
     image = base64.b64decode(image)
     image = tf.image.decode_jpeg(image, channels=3)
-    image = tf.image.convert_image_dtype(image, tf.float32)
+    # image = tf.image.convert_image_dtype(image, tf.float32)
     image = tf.image.resize(image, (224,224))
     image = np.expand_dims(image, axis=0)
     img = np.array(image)
+    print("------------Image---------\n")
+    print(img)
     image = preprocess_input(img)
-    outembedding = imageModel.predict(image)
-    embedding = np.array(outembedding)
+    embedding = imageModel.predict(image)
     embedding = embedding.flatten()
     N_QUERY_RESULT = 5
     print("------------EMBEDDING---------\n")
