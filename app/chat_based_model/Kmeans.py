@@ -15,7 +15,7 @@ def normalize_cat(cat, max_cat, min_cat):
 def kmeans():
     with open('products.pkl', 'rb') as handle:
         products= pickle.load(handle)
-    df = pd.DataFrame(products, columns = ['id','category','price'])
+    df = pd.DataFrame(products, columns = ['id','category','price', 'age'])
     dfx = df.copy()
     df['category'] = df['category'].apply(bin_to_dec)
     max_cat = df['category'].max()

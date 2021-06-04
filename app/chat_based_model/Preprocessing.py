@@ -64,25 +64,32 @@ def hot_encode_three_categories():
 
 def data_preprocessing():
 
-    query = "select product_id,categories_name,price from toys_shop.products where price <= 3000;"
+    query = "select product_id, categories_name, price, age from toys_shop.products where price <= 3000;"
     products = load_data_db(query)  
     data = []
     prices = []
+    ages = []
     for product in products:
         #prices (bara el for loop) collects all product's prices to be able to calculate max and min price
         prices.append(product[2])
+        ages.append(product[3])
     maxPrice = max(prices)
     minPrice = min(prices)
+    maxAge = max(ages)
+    minAge = min(ages)
     #save max price and min price in a file to be used in normalizing fixed_user_parameters
     with open('max_min_prices.pkl', 'wb') as handle:
             pickle.dump([maxPrice, minPrice], handle)
+    #save max age and min age in a file to be used in normalizing fixed_user_parameters
+    with open('max_min_ages.pkl', 'wb') as handle:
+            pickle.dump([maxAge, minAge], handle)
     #load the lengths of category 1,2,3
     with open('c_len.pkl', 'rb') as handle:
         c_len = pickle.load(handle)
     cat1_zeroes = '0' * c_len[0]
     cat2_zeroes = '0' * c_len[1]
     cat3_zeroes = '0' * c_len[2]
-    data, products = hot_encode_products(products, cat1_zeroes, cat2_zeroes, cat3_zeroes, maxPrice, minPrice)
+    data, products = hot_encode_products(products, cat1_zeroes, cat2_zeroes, cat3_zeroes, maxPrice, minPrice, maxAge, minAge)
     #save the data list [0,1,0,0,0,0,1,.....,0,0.15] to a file
     with open('data.pkl', 'wb') as handle:
         pickle.dump(data, handle)
@@ -106,7 +113,7 @@ def data_preprocessing():
     with open('encoded_clust.pkl', 'wb') as handle:
             pickle.dump(encoded_clust, handle)
 
-def hot_encode_products(products, cat1_zeroes, cat2_zeroes, cat3_zeroes, maxPrice, minPrice):
+def hot_encode_products(products, cat1_zeroes, cat2_zeroes, cat3_zeroes, maxPrice, minPrice, maxAge, minAge):
     with open('dictionary.pkl', 'rb') as handle:
         dictionary = pickle.load(handle)
     data = []
@@ -126,8 +133,11 @@ def hot_encode_products(products, cat1_zeroes, cat2_zeroes, cat3_zeroes, maxPric
         row = list(map(int, product[1])) #[0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         #normalize prices
         product[2] = (product[2] - minPrice) / (maxPrice - minPrice)
-        #append price to "row" making it last item in it
+        #normalize ages
+        product[3] = (float(product[3]) - float(minAge)) / (float(maxAge) - float(minAge))
+        #append price and age to "row" making it last item in it
         row.append(product[2])
+        row.append(product[3])
         #data (bara el for loop) array of arrays
         data.append(row)
     return data, products
@@ -137,8 +147,9 @@ def cat_string_to_list(products):
     data = []
     for product in products:
         row = list(map(int, product[1])) #[0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        #append price to "row" making it last item in it
+        #append price and age to "row" making it last item in it
         row.append(product[2])
+        row.append(product[3])
         #data (bara el for loop) array of arrays
         data.append(row)
     return data

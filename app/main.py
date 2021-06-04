@@ -23,6 +23,7 @@ chatBased_user_parameters = {}
 Knn_exec_time = 0.0
 ImgSerch_exec_time = 0.0
 model_messages = ""
+ages = {'من 0-1 سنه' : 0.5, 'من 1-2 سنه' : 1.5, 'من 2-3 سنه' : 2.5, 'من 3-4 سنه' : 3.5, 'من 4-5 سنه' : 4.5, 'من 5-6 سنه' : 5.5, 'اكثر من 6 سنوات' : 7}
 
 #pre processing run once after every flask run
 @app.before_first_request
@@ -92,6 +93,8 @@ def sendText():
             elif data["choiceType"] == "price":
                 chatBased_user_parameters['category3']=choice  
 
+            elif data["choiceType"] == "gender":
+                chatBased_user_parameters['age']=ages[choice]  
         else:
             data = messages[0]
             data["message"] = "هناك عطل"
