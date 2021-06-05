@@ -25,6 +25,11 @@ ImgSerch_exec_time = 0.0
 model_messages = ""
 ages = {'من 0-1 سنه' : 0.5, 'من 1-2 سنه' : 1.5, 'من 2-3 سنه' : 2.5, 'من 3-4 سنه' : 3.5, 'من 4-5 سنه' : 4.5, 'من 5-6 سنه' : 5.5, 'اكثر من 6 سنوات' : 7}
 
+if os.stat('Kmeans_Test_Cases.csv').st_size == 0:
+    df = pd.DataFrame(columns=['category_1','category_2','category_3','mean_price','mean_age', 'error%','execution_time_(s)'])
+else:
+    df = pd.read_csv('Kmeans_Test_Cases.csv')
+
 #pre processing run once after every flask run
 @app.before_first_request
 def before_first_request():
@@ -138,15 +143,15 @@ def sendImagesList():
         data["index"] = index
         data["status"] = 'success'
         global ImgSerch_exec_time
-        ImgSerch_exec_time = timeit.timeit(functools.partial(predictImages,imageList[0]), number=1) 
+       # ImgSerch_exec_time = timeit.timeit(functools.partial(predictImages,imageList[0]), number=1) 
         print(ImgSerch_exec_time)
         # get recommendations produced in image_based_messages folder
-        imageBased_recommendations = get_imageBased_recommendations()
-        print(imageBased_recommendations)
-        if(imageBased_recommendations):
-            print("imageBased_recommendations")
-            print(imageBased_recommendations)
-            data['cards'] = imageBased_recommendations
+        # imageBased_recommendations = get_imageBased_recommendations()
+        # print(imageBased_recommendations)
+        # if(imageBased_recommendations):
+        #     print("imageBased_recommendations")
+        #     print(imageBased_recommendations)
+        #     data['cards'] = imageBased_recommendations
     else:
         data = messages[0]
         data["message"] = "هناك عطل"
@@ -249,29 +254,20 @@ def sendpriceRange():
             print(chatBased_recommendations)
             data['cards'] = chatBased_recommendations
         
-                    #time to execute functon
-                # global Knn_exec_time
-                # Knn_exec_time = timeit.timeit(functools.partial(get_similar_products,user_parameters), number=1) # calling get_similar_products(user_parameters) in HotEncoder.py
-                # print(Knn_exec_time)
-                # #for generating test cases for knn method
-                # error = get_error()
-                # new_test_case ={'category 1':user_parameters['category1'],'category 2':user_parameters['category2'],
-                # 'category 3':user_parameters['category3'],'mean price':(min(user_parameters['price'])+max(user_parameters['price']))/2, 
-                # 'error %':error*100, 'execution time (s)':Knn_exec_time}
-                # global df
-                # df = df.append(new_test_case, ignore_index=True)
-                # df.to_csv('KNN_Test_Cases.csv',index=False)
-                # print(df)
-                # print(user_parameters)
-                # print(error)
-                # print("Time Taken To Execute get_similar_products (seconds): ",Knn_exec_time)
+            # knn Test cases
+            error = get_error()
+            new_test_case ={'category_1':chatBased_user_parameters['category1'],'category_2':chatBased_user_parameters['category2'],
+            'category_3':chatBased_user_parameters['category3'],'mean_price':(min(chatBased_user_parameters['price'])+max(chatBased_user_parameters['price']))/2, 'mean_age' : chatBased_user_parameters['age'],
+            'error%':error*100, 'execution_time_(s)':Knn_exec_time}
+            global df
+            df = df.append(new_test_case, ignore_index=True)
+            df.to_csv('Kmeans_Test_Cases.csv',index=False)
+            print(df)
+            print(chatBased_user_parameters)
+            print(error)
+            print("Time Taken To Execute get_similar_products (seconds): ",Knn_exec_time)
 
-                #showing product cards
-                # recommendations = get_recommendations()
-                # if(recommendations):
-                #     print("recommendations")
-                #     print(recommendations)
-                #     data['cards'] = recommendations
+                
 
     else:
         data = messages[0]

@@ -1,5 +1,6 @@
 import psycopg2
 from psycopg2.extras import DictCursor
+import time
 
 class Database:
     """PostgreSQL Database class."""
@@ -18,19 +19,22 @@ class Database:
     def connect(self):
         """Connect to a Postgres database."""
         if self.conn is None:
-            try:
-                self.conn = psycopg2.connect(
-                    host=self.host,
-                    user=self.username,
-                    password=self.password,
-                    port=self.port,
-                    dbname=self.dbname
-                )
-            except psycopg2.DatabaseError as e:
-                print(e)
-                raise e
-            finally:
-                print("Connection opened successfully.")
+            while True:
+                try:
+                    self.conn = psycopg2.connect(
+                        host=self.host,
+                        user=self.username,
+                        password=self.password,
+                        port=self.port,
+                        dbname=self.dbname
+                    )
+                    break
+                except psycopg2.DatabaseError as e:
+                    print(e)
+                    time.sleep(1)
+                    
+                finally:
+                    print("Connection opened successfully.")
     
     def select_rows_dict_cursor(self,query):
         """Run SELECT query and return list of dicts."""
