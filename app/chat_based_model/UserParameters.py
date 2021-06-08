@@ -1,4 +1,3 @@
-import sklearn
 from app.db_connection import Database
 from sklearn.neighbors import NearestNeighbors
 from scipy.spatial import distance
