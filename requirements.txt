@@ -138,7 +138,6 @@ rivescript==1.15.0
 rsa==4.6
 schedule==1.1.0
 scikit-learn==0.22
-scipy==1.4.1
 seaborn==0.9.0
 selenium==3.141.0
 Send2Trash==1.5.0
