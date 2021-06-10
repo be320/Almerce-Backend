@@ -4,7 +4,7 @@ Flask-Cors==3.0.9
 image==1.5.33
 jupyter==1.0.0
 jupyter-client==5.3.5
-jupyter-console==6.2.0
+jupyter-console==5.2.0
 jupyter-core==4.6.3
 jupyterlab-pygments==0.1.2
 Keras==2.4.3
