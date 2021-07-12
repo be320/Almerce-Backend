@@ -1,9 +1,10 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
-from .product_event import product_event_details
+from .click_event import saveClick
 from .order_completed import order_completed_details
 import timeit, functools
 import os
+from .db_connection import load_data_db
 
 from app.chat_based_model.Sequence import chat_based_messages
 from app.chat_based_model.Preprocessing import chat_based_model_preprocessing
@@ -13,12 +14,14 @@ from .category import *
 from app.image_based_model.sequence import image_based_messages
 from app.image_based_model.imageModel import predictImages
 from app.image_based_model.imageModel import get_imageBased_recommendations
+# from flask_ngrok import run_with_ngrok
 
 
 app = Flask(__name__)
-
+# run_with_ngrok(app)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
+app.config['DEBUG'] = True
 chatBased_user_parameters = {}
 Knn_exec_time = 0.0
 ImgSerch_exec_time = 0.0
@@ -288,13 +291,24 @@ def track():
         if event_type == "Order Completed":
             order_completed_details(request_data)
         else:
-            product_event_details(request_data)
+            saveClick(request_data)
         data = {}
         data["reply"] = "Data Received"
         data["status"] = 'success'
         return jsonify(data)
     else:
         return ""
+
+@app.route('/recommendFromClicks', methods=["GET"])
+def recommendFromClicks():
+    query = "select product_id, categories_name, price, age from toys_shop.products where price <= 3000;"
+    query = "SELECT * FROM Customers ORDER BY Country;"
+    products = load_data_db(query)  
+
+
+
+
+
 
 # # Load data from database to be used in model
 # @app.route('/load_data', methods=["GET"])
