@@ -301,9 +301,19 @@ def track():
 
 @app.route('/recommendFromClicks', methods=["GET"])
 def recommendFromClicks():
-    query = "select product_id, categories_name, price, age from toys_shop.products where price <= 3000;"
-    query = "SELECT * FROM Customers ORDER BY Country;"
-    products = load_data_db(query)  
+    query = "SELECT session_id FROM toys_shop.realtime_clicks;"
+    users = load_data_db(query)  
+    last_user = users[len(users)-1][0]
+    query = "SELECT product_id FROM toys_shop.realtime_clicks WHERE session_id = '" +str(last_user)+"';"
+    products = load_data_db(query)
+    products = products[::-1]
+    if len(products) > 5:
+        products = products[:5] 
+    print(products)
+    data = {}
+    data["reply"] = "Data Received"
+    data["status"] = 'success'
+    return jsonify(data)
 
 
 

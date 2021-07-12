@@ -56,6 +56,7 @@ class Database:
         self.conn.commit()
         print("Inserted Record Successfully")
         cursor.close()
+        self.conn.close()
 
 
 def load_data_db(query):
