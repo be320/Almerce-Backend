@@ -1,4 +1,4 @@
-image_based_messages = [
+clicks_based_messages = [
 {
     "message": {"TextField": " اهلا بيك، تحب ألميرس يساعدك ازاي؟"},
     "elementType": "ChoiceTemplate",
@@ -6,10 +6,16 @@ image_based_messages = [
     "choiceType":"model_type"
 },
 {
-    "message": {"TextField": " ممكن صورة او صور  للمنتج الي بتدور عليه"},
-    "elementType": "MessageTemplate",
-    "choices": [],
-    "choiceType":"IMG"
+    "message": {"TextField": "متقلقش حتي لو مش بتدور علي حاجة معينة الميرس هيقدر يساعدك و يعرف انت حابب ايه من خلال تصفحك للويب سايت, لو عجباك الفكرة دوس موافق"},
+    "elementType": "ChoiceTemplate",
+    "choices": ["موافق"],
+    "choiceType":"NONE"
+},
+{
+    "message": {"TextField": "  جاري تتبع نقراتك، تقدر تتصفح الصفحة ذي ما تحب و اما تحب الميرس يعرضلك المقترحات قولنا"},
+    "elementType": "ChoiceTemplate",
+    "choices": ["اعرض الاقتراحات"],
+    "choiceType":"ClicksRecommendation"
 },
 {
     "elementType": "ProductCardTemplate",
