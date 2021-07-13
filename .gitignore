@@ -2,3 +2,6 @@ pyvenv.cfg
 venv/Lib
 .vscode
 models
+*.csv
+*.pyc
+*.exe
