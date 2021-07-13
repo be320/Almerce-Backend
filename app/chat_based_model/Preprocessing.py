@@ -63,7 +63,6 @@ def hot_encode_three_categories():
 
 
 def data_preprocessing():
-
     query = "select product_id, categories_name, price, age from toys_shop.products where price <= 3000;"
     products = load_data_db(query)  
     data = []

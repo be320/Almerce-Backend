@@ -48,7 +48,23 @@ class Database:
         cur.close()
         return records
 
+    def insert_rows(self,query,record):
+        """Run INSERT query FOR REALTIME CLICKS"""
+        self.connect()
+        cursor = self.conn.cursor()
+        cursor.execute(query,record)
+        self.conn.commit()
+        print("Inserted Record Successfully")
+        cursor.close()
+        self.conn.close()
+
+
 def load_data_db(query):
     db=Database()
     result = Database.select_rows_dict_cursor(db,query)
+    return result
+
+def insert_data_db(query,record):
+    db=Database()
+    result = Database.insert_rows(db,query,record)
     return result
