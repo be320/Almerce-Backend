@@ -357,28 +357,28 @@ def track():
     else:
         return ""
 
-@app.route('/recommendFromClicks', methods=["GET"])
-def recommendFromClicks():
-    query = "SELECT session_id FROM toys_shop.realtime_clicks;"
-    users = load_data_db(query)  
-    last_user = users[len(users)-1][0]
-    query = "SELECT product_id FROM toys_shop.realtime_clicks WHERE session_id = '" +str(last_user)+"';"
-    products = load_data_db(query)
-    products = products[::-1]
-    if len(products) > 5:
-        products = products[:5] 
+# @app.route('/recommendFromClicks', methods=["GET"])
+# def recommendFromClicks():
+#     query = "SELECT session_id FROM toys_shop.realtime_clicks;"
+#     users = load_data_db(query)  
+#     last_user = users[len(users)-1][0]
+#     query = "SELECT product_id FROM toys_shop.realtime_clicks WHERE session_id = '" +str(last_user)+"';"
+#     products = load_data_db(query)
+#     products = products[::-1]
+#     if len(products) > 5:
+#         products = products[:5] 
     
-    products_details = []
-    for prod in products:
-        prod = prod[0]
-        query = "SELECT categories_name,price,age FROM toys_shop.products WHERE product_id = '"+str(prod)+"';"
-        prod = load_data_db(query)
-        products_details.append(prod)
-    print(products_details)
-    data = {}
-    data["reply"] = "Data Received"
-    data["status"] = 'success'
-    return jsonify(data)
+#     products_details = []
+#     for prod in products:
+#         prod = prod[0]
+#         query = "SELECT categories_name,price,age FROM toys_shop.products WHERE product_id = '"+str(prod)+"';"
+#         prod = load_data_db(query)
+#         products_details.append(prod)
+#     print(products_details)
+#     data = {}
+#     data["reply"] = "Data Received"
+#     data["status"] = 'success'
+#     return jsonify(data)
 
 
 
