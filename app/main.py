@@ -15,7 +15,6 @@ from app.image_based_model.sequence import image_based_messages
 from app.image_based_model.imageModel import predictImages , get_imageBased_recommendations
 from app.Real_time_ClickStream_model.sequence import clicks_based_messages
 from app.Real_time_ClickStream_model.clicksModel import predictClicks,get_clicksBased_recommendations
-from app.nlp_based_model.sequence import nlp_based_messages 
 
 # from flask_ngrok import run_with_ngrok
 
@@ -74,7 +73,7 @@ def sendText():
         elif (choice =="البحث عن طريق الصور"):
             model_messages = "image_based_messages"
         elif (choice =="التحدث مع ألميرس"):
-            model_messages = "nlp_based_messages"
+            model_messages = "text_based_messages"
         elif (choice =="البحث من خلال تصفح الويب سايت"):
             model_messages = "clicks_based_messages"
     #---------------------------------------------------------------
@@ -150,20 +149,6 @@ def sendText():
             data["serverSide"] = True
             data["status"] = 'BAD REQUEST'
 
-    elif model_messages == "nlp_based_messages":
-        if index >= 0 & index < len(nlp_based_messages):
-            data = nlp_based_messages[index]
-            data["serverSide"] = True
-            data["index"] = index
-            data["status"] = 'success'
-
-        else:
-            data = messages[0]
-            data["message"] = "هناك عطل"
-            data["elementType"] = "MessageTemplate"
-            data["serverSide"] = True
-            data["status"] = 'BAD REQUEST'
-
         return jsonify(data)
 
 
@@ -188,6 +173,7 @@ def sendImagesList():
         print(ImgSerch_exec_time)
         #get recommendations produced in image_based_messages folder
         imageBased_recommendations = get_imageBased_recommendations()
+        print(imageBased_recommendations)
         if(imageBased_recommendations):
             print("imageBased_recommendations")
             print(imageBased_recommendations)
@@ -332,6 +318,11 @@ def sendpriceRange():
     print(data)
     return jsonify(data)
 
+
+
+
+
+
 #assuming this will only be used with clicks_based_model
 @app.route('/recommendFromClicks', methods=["POST"])
 def recommendFromClicks():
@@ -340,10 +331,7 @@ def recommendFromClicks():
     index = temp["index"]
     choice = temp["message"]["TextField"]
 
-    
     data = {}
-    data["reply"] = "Data Received"
-
     print("recommendFromClicks called")
     if index >= 0 & index < len(clicks_based_messages):
             data = clicks_based_messages[index]
@@ -359,6 +347,9 @@ def recommendFromClicks():
                 print(clicksBased_recommendations)
                 data['cards'] = clicksBased_recommendations
 
+                
+            data["reply"] = "Data Received"
+            data["status"] = 'success'
     else:
         data = messages[0]
         data["message"] = "هناك عطل"
@@ -384,43 +375,6 @@ def track():
         return jsonify(data)
     else:
         return ""
-
-# @app.route('/recommendFromClicks', methods=["GET"])
-# def recommendFromClicks():
-#     query = "SELECT session_id FROM toys_shop.realtime_clicks;"
-#     users = load_data_db(query)  
-#     last_user = users[len(users)-1][0]
-#     query = "SELECT product_id FROM toys_shop.realtime_clicks WHERE session_id = '" +str(last_user)+"';"
-#     products = load_data_db(query)
-#     products = products[::-1]
-#     if len(products) > 5:
-#         products = products[:5] 
-    
-#     products_details = []
-#     for prod in products:
-#         prod = prod[0]
-#         query = "SELECT categories_name,price,age FROM toys_shop.products WHERE product_id = '"+str(prod)+"';"
-#         prod = load_data_db(query)
-#         products_details.append(prod)
-#     print(products_details)
-#     data = {}
-#     data["reply"] = "Data Received"
-#     data["status"] = 'success'
-#     return jsonify(data)
-
-
-
-
-
-
-# # Load data from database to be used in model
-# @app.route('/load_data', methods=["GET"])
-# def load_data():
-#     db_connect()
-#     data = {}
-#     data["reply"] = "Working!!!!!------------aaaaaaa"
-#     data["status"] = 'success'
-#     return jsonify(data)
 
 # A welcome message to test our server
 @app.route('/')

@@ -10,7 +10,7 @@ def get_chatBased_recommendations():
 def get_error():
     return error
 
-def get_similar_products(user_parameters):
+def get_similar_products(user_parameters, N_QUERY_RESULT = 5):
     fixed_user_parameters = hot_encoding_user_parameters(user_parameters)
     # with open('data.pkl', 'rb') as handle:
     #     data = pickle.load(handle)
@@ -28,7 +28,7 @@ def get_similar_products(user_parameters):
     minCat = max_min_cat[1]
     selected_cluster = kmeans.predict(X = [[normalize_cat(bin_to_dec(fixed_user_parameters['category']), maxCat, minCat),fixed_user_parameters['mean_price']]])
     data = encoded_clust[selected_cluster[0]]
-    N_QUERY_RESULT = 5
+#    N_QUERY_RESULT = 5
     nbrs = NearestNeighbors(n_neighbors=N_QUERY_RESULT, algorithm = 'brute',metric=custom_metric).fit(data)
     user_input= list(fixed_user_parameters['category'])
     user_input.append(fixed_user_parameters['mean_price'])
@@ -53,7 +53,8 @@ def get_similar_products(user_parameters):
     for i in similar_product_indices:
         R = {}   
         id = products[i][0]
-        query = "select name,image_name,description from toys_shop.products where product_id = "+str(id)+";"
+        print(id)
+        query = "select name,image_name,description from toys_shop.products where product_id = '"+str(id)+"';"
         query_result = load_data_db(query)
         print(query_result)
         R['productHeader'] = query_result[0][0]
