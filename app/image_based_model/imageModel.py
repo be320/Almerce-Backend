@@ -68,6 +68,7 @@ def predictImages(imageList):
 def get_similar_products():
     global recommendations
     for id in id_results:
+        print(id)
         R = {}   
         query = "select name,image_name,description from toys_shop.products where product_id = "+str(id)+";"
         query_result = load_data_db(query)

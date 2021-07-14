@@ -14,8 +14,11 @@ from .category import *
 from app.image_based_model.sequence import image_based_messages
 from app.image_based_model.imageModel import predictImages
 from app.image_based_model.imageModel import get_imageBased_recommendations
+from app.Real_time_ClickStream_model.sequence import clicks_based_messages
 # from flask_ngrok import run_with_ngrok
 
+
+from sklearn.model_selection import train_test_split
 
 app = Flask(__name__)
 # run_with_ngrok(app)
@@ -36,6 +39,7 @@ else:
 #pre processing run once after every flask run
 @app.before_first_request
 def before_first_request():
+    print("main.py >> before_first_request called")
     chat_based_model_preprocessing() # hot encoding the 3 categories & fetch products from database and saves it into file
             
 #this message show to the user when an error occur
@@ -69,6 +73,8 @@ def sendText():
             model_messages = "image_based_messages"
         elif (choice =="التحدث مع ألميرس"):
             model_messages = "text_based_messages"
+        elif (choice =="البحث من خلال تصفح الويب سايت"):
+            model_messages = "clicks_based_messages"
     #---------------------------------------------------------------
     if model_messages == "chat_based_messages":
         if index >= 0 & index < len(chat_based_messages):
@@ -127,6 +133,22 @@ def sendText():
             data["status"] = 'BAD REQUEST'
 
         return jsonify(data)
+    
+    elif model_messages == "clicks_based_messages":
+        if index >= 0 & index < len(clicks_based_messages):
+            data = clicks_based_messages[index]
+            data["serverSide"] = True
+            data["index"] = index
+            data["status"] = 'success'
+
+        else:
+            data = messages[0]
+            data["message"] = "هناك عطل"
+            data["elementType"] = "MessageTemplate"
+            data["serverSide"] = True
+            data["status"] = 'BAD REQUEST'
+
+        return jsonify(data)
 
 
 #assuming this will only be used with image_based_model
@@ -146,15 +168,15 @@ def sendImagesList():
         data["index"] = index
         data["status"] = 'success'
         global ImgSerch_exec_time
-       # ImgSerch_exec_time = timeit.timeit(functools.partial(predictImages,imageList[0]), number=1) 
+        ImgSerch_exec_time = timeit.timeit(functools.partial(predictImages,imageList[0]), number=1) 
         print(ImgSerch_exec_time)
-        # get recommendations produced in image_based_messages folder
-        # imageBased_recommendations = get_imageBased_recommendations()
-        # print(imageBased_recommendations)
-        # if(imageBased_recommendations):
-        #     print("imageBased_recommendations")
-        #     print(imageBased_recommendations)
-        #     data['cards'] = imageBased_recommendations
+        #get recommendations produced in image_based_messages folder
+        imageBased_recommendations = get_imageBased_recommendations()
+        print(imageBased_recommendations)
+        if(imageBased_recommendations):
+            print("imageBased_recommendations")
+            print(imageBased_recommendations)
+            data['cards'] = imageBased_recommendations
     else:
         data = messages[0]
         data["message"] = "هناك عطل"
@@ -226,6 +248,21 @@ def sendchangeRating():
             data["status"] = 'BAD REQUEST'
         print(data)
         return jsonify(data)
+
+    elif(model_messages == "clicks_based_messages"):
+        if index >= 0 & index < len(clicks_based_messages):
+            data = clicks_based_messages[index] 
+            data["serverSide"] = True
+            data["index"] = index
+            data["status"] = 'success'
+        else:
+            data = messages[0]
+            data["message"] = "هناك عطل"
+            data["elementType"] = "MessageTemplate"
+            data["serverSide"] = True
+            data["status"] = 'BAD REQUEST'
+        print(data)
+        return jsonify(data)
     
 #assuming this will only be used with chat_based_model
 @app.route('/sendpriceRange', methods=["POST"])
@@ -270,8 +307,6 @@ def sendpriceRange():
             print(error)
             print("Time Taken To Execute get_similar_products (seconds): ",Knn_exec_time)
 
-                
-
     else:
         data = messages[0]
         data["message"] = "هناك عطل"
@@ -280,6 +315,29 @@ def sendpriceRange():
         data["status"] = 'BAD REQUEST'
 
     print(data)
+    return jsonify(data)
+
+#assuming this will only be used with clicks_based_model
+@app.route('/recommendFromClicks', methods=["POST"])
+def recommendFromClicks():
+    request_data = request.get_json()
+    temp = request_data["Template"]
+    index = temp["index"]
+    choice = temp["message"]["TextField"]
+    data = {}
+    print("recommendFromClicks called")
+    if index >= 0 & index < len(clicks_based_messages):
+            data = clicks_based_messages[index]
+            data["serverSide"] = True
+            data["index"] = index
+            data["status"] = 'success'
+    else:
+        data = messages[0]
+        data["message"] = "هناك عطل"
+        data["elementType"] = "MessageTemplate"
+        data["serverSide"] = True
+        data["status"] = 'BAD REQUEST'
+
     return jsonify(data)
 
 # Track Click Events
