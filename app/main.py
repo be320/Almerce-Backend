@@ -309,7 +309,14 @@ def recommendFromClicks():
     products = products[::-1]
     if len(products) > 5:
         products = products[:5] 
-    print(products)
+    
+    products_details = []
+    for prod in products:
+        prod = prod[0]
+        query = "SELECT categories_name,price,age FROM toys_shop.products WHERE product_id = '"+str(prod)+"';"
+        prod = load_data_db(query)
+        products_details.append(prod)
+    print(products_details)
     data = {}
     data["reply"] = "Data Received"
     data["status"] = 'success'
