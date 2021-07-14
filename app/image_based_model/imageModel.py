@@ -8,12 +8,13 @@ from keras.applications.vgg16 import preprocess_input
 from keras.applications.vgg16 import VGG16
 import base64
 
-with open('./app/image_based_model/resources/VGG16_features.npy', 'rb') as f:
+with open('./app/image_based_model/resources/vgg16_features_updated.npy', 'rb') as f:
       img_vector_features = np.load(f)
 
-with open('./app/image_based_model/resources/products_map_satr.npy', 'rb') as f:
+with open('./app/image_based_model/resources/products_map_updated.npy', 'rb') as f:
     data_map = np.load(f)
-    
+
+print(data_map)
 imageModel = VGG16(weights='imagenet', include_top=False, pooling='max')
 
 id_results = []
@@ -47,13 +48,13 @@ def predictImages(imageList):
     N_QUERY_RESULT = 5
     print("------------EMBEDDING---------\n")
     print(embedding)
-    features = img_vector_features.reshape(2253,512)
+    features = img_vector_features.reshape(2236,512)
     nbrs = NearestNeighbors(n_neighbors=N_QUERY_RESULT,metric="cosine").fit(features)
     
     distances, indices = nbrs.kneighbors([embedding])
     similar_image_indices = indices.reshape(-1)
     topFive_results = []
-
+    print(similar_image_indices)
     for j in range(N_QUERY_RESULT):
         ind = similar_image_indices[j]
         fileName = data_map[ind]
@@ -70,7 +71,7 @@ def get_similar_products():
     for id in id_results:
         print(id)
         R = {}   
-        query = "select name,image_name,description from toys_shop.products where product_id = "+str(id)+";"
+        query = "select name,image_name,description from toys_shop.products where product_id = '"+str(id)+"';"
         query_result = load_data_db(query)
         R['productHeader'] = query_result[0][0]
         R['imgSrc'] = query_result[0][1]
@@ -79,7 +80,7 @@ def get_similar_products():
         else:
             R['productParagraph'] = query_result[0][2]
 
-        R['id']= id
+        R['id']= "'"+str(id)+"'"
         nn = str(query_result[0][0])
         n = nn.replace(" ","-")
         R['ProductUrl']= "https://www.magaya.world/product/"+n+"/"

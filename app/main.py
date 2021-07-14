@@ -10,6 +10,7 @@ from app.chat_based_model.Sequence import chat_based_messages
 from app.chat_based_model.Preprocessing import chat_based_model_preprocessing
 from app.chat_based_model.UserParameters import *
 from app.chat_based_model.Knn import *
+from app.Real_time_ClickStream_model.clicks import recommend_clicks
 from .category import *
 from app.image_based_model.sequence import image_based_messages
 from app.image_based_model.imageModel import predictImages
@@ -183,6 +184,8 @@ def sendImagesList():
         data["elementType"] = "MessageTemplate"
         data["serverSide"] = True
         data["status"] = 'BAD REQUEST'
+    print("-------------------------")
+    print(data)
     return jsonify(data)
 
 @app.route('/sendAudioMessage', methods=["POST"])
@@ -318,27 +321,27 @@ def sendpriceRange():
     return jsonify(data)
 
 #assuming this will only be used with clicks_based_model
-@app.route('/recommendFromClicks', methods=["POST"])
-def recommendFromClicks():
-    request_data = request.get_json()
-    temp = request_data["Template"]
-    index = temp["index"]
-    choice = temp["message"]["TextField"]
-    data = {}
-    print("recommendFromClicks called")
-    if index >= 0 & index < len(clicks_based_messages):
-            data = clicks_based_messages[index]
-            data["serverSide"] = True
-            data["index"] = index
-            data["status"] = 'success'
-    else:
-        data = messages[0]
-        data["message"] = "هناك عطل"
-        data["elementType"] = "MessageTemplate"
-        data["serverSide"] = True
-        data["status"] = 'BAD REQUEST'
+# @app.route('/recommendFromClicks', methods=["POST"])
+# def recommendFromClicks():
+#     request_data = request.get_json()
+#     temp = request_data["Template"]
+#     index = temp["index"]
+#     choice = temp["message"]["TextField"]
+#     data = {}
+#     print("recommendFromClicks called")
+#     if index >= 0 & index < len(clicks_based_messages):
+#             data = clicks_based_messages[index]
+#             data["serverSide"] = True
+#             data["index"] = index
+#             data["status"] = 'success'
+#     else:
+#         data = messages[0]
+#         data["message"] = "هناك عطل"
+#         data["elementType"] = "MessageTemplate"
+#         data["serverSide"] = True
+#         data["status"] = 'BAD REQUEST'
 
-    return jsonify(data)
+#     return jsonify(data)
 
 # Track Click Events
 @app.route('/track', methods=["POST"])
@@ -357,28 +360,29 @@ def track():
     else:
         return ""
 
-# @app.route('/recommendFromClicks', methods=["GET"])
-# def recommendFromClicks():
-#     query = "SELECT session_id FROM toys_shop.realtime_clicks;"
-#     users = load_data_db(query)  
-#     last_user = users[len(users)-1][0]
-#     query = "SELECT product_id FROM toys_shop.realtime_clicks WHERE session_id = '" +str(last_user)+"';"
-#     products = load_data_db(query)
-#     products = products[::-1]
-#     if len(products) > 5:
-#         products = products[:5] 
+@app.route('/recommendFromClicks', methods=["GET"])
+def recommendFromClicks():
+    query = "SELECT session_id FROM toys_shop.realtime_clicks;"
+    users = load_data_db(query)  
+    last_user = users[len(users)-1][0]
+    query = "SELECT product_id FROM toys_shop.realtime_clicks WHERE session_id = '" +str(last_user)+"';"
+    products = load_data_db(query)
+    products = products[::-1]
+    if len(products) > 5:
+        products = products[:5] 
     
-#     products_details = []
-#     for prod in products:
-#         prod = prod[0]
-#         query = "SELECT categories_name,price,age FROM toys_shop.products WHERE product_id = '"+str(prod)+"';"
-#         prod = load_data_db(query)
-#         products_details.append(prod)
-#     print(products_details)
-#     data = {}
-#     data["reply"] = "Data Received"
-#     data["status"] = 'success'
-#     return jsonify(data)
+    products_details = []
+    for prod in products:
+        prod = prod[0]
+        query = "SELECT categories_name,price,age FROM toys_shop.products WHERE product_id = '"+str(prod)+"';"
+        prod = load_data_db(query)
+        products_details.append(prod)
+    print(products_details)
+    recommend_clicks(products_details)
+    data = {}
+    data["reply"] = "Data Received"
+    data["status"] = 'success'
+    return jsonify(data)
 
 
 
