@@ -12,9 +12,10 @@ from app.chat_based_model.UserParameters import *
 from app.chat_based_model.Knn import *
 from .category import *
 from app.image_based_model.sequence import image_based_messages
-from app.image_based_model.imageModel import predictImages
-from app.image_based_model.imageModel import get_imageBased_recommendations
+from app.image_based_model.imageModel import predictImages , get_imageBased_recommendations
 from app.Real_time_ClickStream_model.sequence import clicks_based_messages
+from app.Real_time_ClickStream_model.clicksModel import predictClicks,get_clicksBased_recommendations
+
 # from flask_ngrok import run_with_ngrok
 
 
@@ -325,16 +326,7 @@ def recommendFromClicks():
     index = temp["index"]
     choice = temp["message"]["TextField"]
 
-    query = "SELECT session_id FROM toys_shop.realtime_clicks;"
-    users = load_data_db(query)  
-    last_user = users[len(users)-1][0]
-    query = "SELECT product_id FROM toys_shop.realtime_clicks WHERE session_id = '" +str(last_user)+"';"
-    products = load_data_db(query)
-    products = products[::-1]
-    if len(products) > 5:
-        products = products[:5] 
-    print(products)
-
+    
     data = {}
     data["reply"] = "Data Received"
 
@@ -344,6 +336,15 @@ def recommendFromClicks():
             data["serverSide"] = True
             data["index"] = index
             data["status"] = 'success'
+
+            predictClicks()
+            clicksBased_recommendations = get_clicksBased_recommendations()
+            print(clicksBased_recommendations)
+            if(clicksBased_recommendations):
+                print("clicksBased_recommendations")
+                print(clicksBased_recommendations)
+                data['cards'] = clicksBased_recommendations
+
     else:
         data = messages[0]
         data["message"] = "هناك عطل"
@@ -380,7 +381,14 @@ def track():
 #     products = products[::-1]
 #     if len(products) > 5:
 #         products = products[:5] 
-#     print(products)
+    
+#     products_details = []
+#     for prod in products:
+#         prod = prod[0]
+#         query = "SELECT categories_name,price,age FROM toys_shop.products WHERE product_id = '"+str(prod)+"';"
+#         prod = load_data_db(query)
+#         products_details.append(prod)
+#     print(products_details)
 #     data = {}
 #     data["reply"] = "Data Received"
 #     data["status"] = 'success'

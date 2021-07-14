@@ -33,7 +33,7 @@ clicks_based_messages = [
     "choiceType":"ShowRecommendations"
 
 },
- {
+{
     "message": {"TextField":"تحب نساعدك بحاجة تاني؟"},
     "elementType": "ChoiceTemplate",
     "choices":  ["نعم"],

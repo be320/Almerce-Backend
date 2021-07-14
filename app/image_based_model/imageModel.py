@@ -52,11 +52,13 @@ def predictImages(imageList):
     
     distances, indices = nbrs.kneighbors([embedding])
     similar_image_indices = indices.reshape(-1)
+    print("SIMILAR INDICES",similar_image_indices)
     topFive_results = []
 
     for j in range(N_QUERY_RESULT):
         ind = similar_image_indices[j]
         fileName = data_map[ind]
+        print("fileName",fileName)
         topFive_results.append(fileName[0])
         
     print(topFive_results)

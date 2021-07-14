@@ -15,6 +15,7 @@ def chat_based_model_preprocessing():
             time.sleep(2)
 
 def hot_encode_three_categories():
+
     postgreSQL_select_Query = "select * from toys_shop.categories;"
     categories = load_data_db(postgreSQL_select_Query)
     categories = np.array(categories)    
@@ -65,6 +66,7 @@ def hot_encode_three_categories():
 def data_preprocessing():
     query = "select product_id, categories_name, price, age from toys_shop.products where price <= 3000;"
     products = load_data_db(query)  
+    
     data = []
     prices = []
     ages = []
@@ -104,6 +106,7 @@ def data_preprocessing():
     encoded_clust.append(cat_string_to_list(clust[3]))
     encoded_clust.append(cat_string_to_list(clust[4]))
     encoded_clust.append(cat_string_to_list(clust[5]))
+
     #save the clustered data representing the products
     with open('clust.pkl', 'wb') as handle:
             pickle.dump(clust, handle)
