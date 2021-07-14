@@ -1,6 +1,11 @@
-from ..chat_based_model.Knn import get_similar_products,custom_metric
+from ..chat_based_model.Knn import get_similar_products,custom_metric,get_chatBased_recommendations
 
+dummy = []
+
+def get_dummy():
+    return dummy
 def recommend_clicks(products_details):
+    global dummy
     user_parameter = {}
     i = 0
     for product in products_details:
@@ -55,3 +60,4 @@ def recommend_clicks(products_details):
         elif len(products_details) == 1:
             get_similar_products(user_parameter, 5)
             user_parameter = {}
+    dummy = get_chatBased_recommendations()

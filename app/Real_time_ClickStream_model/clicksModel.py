@@ -1,8 +1,11 @@
 from app.db_connection import Database
+from app.Real_time_ClickStream_model.clicks import get_dummy, recommend_clicks
 
     
 id_results = []
 recommendations=[]
+def get_clicksBased_recommendations():
+    return recommendations
 
 
 def load_data_db(query):
@@ -12,6 +15,7 @@ def load_data_db(query):
 
 def predictClicks():
     global  id_results
+    global recommendations
     query = "SELECT session_id FROM toys_shop.realtime_clicks;"
     users = load_data_db(query)  
     last_user = users[len(users)-1][0]
@@ -28,30 +32,9 @@ def predictClicks():
         prod = load_data_db(query)
         products_details.append(prod)
     print(products_details)
-    get_similar_products()
-
-
-
-def get_similar_products():
-    global recommendations
-    for id in id_results:
-        print(id)
-        R = {}   
-        query = "select name,image_name,description from toys_shop.products where product_id = "+str(id)+";"
-        query_result = load_data_db(query)
-        R['productHeader'] = query_result[0][0]
-        R['imgSrc'] = query_result[0][1]
-        if query_result[0][2] == None:
-            R['productParagraph'] = ""
-        else:
-            R['productParagraph'] = query_result[0][2]
-
-        R['id']= id
-        nn = str(query_result[0][0])
-        n = nn.replace(" ","-")
-        R['ProductUrl']= "https://www.magaya.world/product/"+n+"/"
-        recommendations.append(R)
-
+    recommend_clicks(products_details)
+    recommendations = get_dummy()
 
 def get_clicksBased_recommendations():
     return recommendations
+

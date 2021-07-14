@@ -5,3 +5,6 @@ models
 *.csv
 *.pyc
 *.exe
+*.pyc
+*.pkl
+*.csv
