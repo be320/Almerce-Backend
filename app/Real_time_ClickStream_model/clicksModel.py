@@ -1,5 +1,5 @@
 from app.db_connection import Database
-from app.Real_time_ClickStream_model.clicks import recommend_clicks,get_dummy
+from app.Real_time_ClickStream_model.clicks import recommend_clicks,get_temp
 
     
 id_results = []
@@ -31,6 +31,6 @@ def predictClicks():
         prod = load_data_db(query)
         products_details.append(prod)
     recommend_clicks(products_details)
-    Clicks_recommendation = get_dummy()
+    Clicks_recommendation = get_temp()
 
 

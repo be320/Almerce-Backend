@@ -3,13 +3,15 @@ from ..chat_based_model.Knn import get_similar_products,get_chatBased_recommenda
 dummy =[]
 temp = []
 
-def get_dummy():
+def get_temp():
     return temp
+def reset_temp():
+    global temp
+    temp = []
 def recommend_clicks(products_details):
     global dummy
     global temp
     dummy =[]
-    temp =[]
     user_parameter = {}
     i = 0
     for product in products_details:
@@ -75,5 +77,10 @@ def recommend_clicks(products_details):
             dummy.append(get_chatBased_recommendations())
             user_parameter = {}
     
+    print("*** I am dummy ***")
+    print(dummy)
     for d in dummy:
-        temp.append(d[0])
+        for i in d:
+            temp.append(i)
+    print("*** I am temp ***")
+    print(temp)
