@@ -1,13 +1,12 @@
 from app.db_connection import Database
-from app.Real_time_ClickStream_model.clicks import get_dummy, recommend_clicks
+from app.Real_time_ClickStream_model.clicks import recommend_clicks,get_dummy
 
     
 id_results = []
-recommendations=[]
+Clicks_recommendation =[]
+
 def get_clicksBased_recommendations():
-    return recommendations
-
-
+    return Clicks_recommendation
 def load_data_db(query):
     db=Database()
     result = Database.select_rows_dict_cursor(db,query)
@@ -15,7 +14,7 @@ def load_data_db(query):
 
 def predictClicks():
     global  id_results
-    global recommendations
+    global Clicks_recommendation
     query = "SELECT session_id FROM toys_shop.realtime_clicks;"
     users = load_data_db(query)  
     last_user = users[len(users)-1][0]
@@ -31,10 +30,7 @@ def predictClicks():
         query = "SELECT categories_name,price,age FROM toys_shop.products WHERE product_id = '"+str(prod)+"';"
         prod = load_data_db(query)
         products_details.append(prod)
-    print(products_details)
     recommend_clicks(products_details)
-    recommendations = get_dummy()
+    Clicks_recommendation = get_dummy()
 
-def get_clicksBased_recommendations():
-    return recommendations
 

@@ -34,16 +34,14 @@ def get_similar_products(user_parameters, N_QUERY_RESULT = 5):
     user_input.append(fixed_user_parameters['mean_price'])
     user_input.append(fixed_user_parameters['age'])
     distances, indices = nbrs.kneighbors([user_input])
-    print("Similarity distances")
-    print(distances)
+    print("Similarity distances" ,distances)
 
-    print("error")
     global error
     sum2=0
     for distance in distances[0]:
         sum2+=distance
     error=sum2/len(distances[0]) 
-    print(error)
+    print("error",error)
 
     similar_product_indices = indices.reshape(-1)
 
@@ -53,10 +51,9 @@ def get_similar_products(user_parameters, N_QUERY_RESULT = 5):
     for i in similar_product_indices:
         R = {}   
         id = products[i][0]
-        print(id)
+        print("id",id)
         query = "select name,image_name,description from toys_shop.products where product_id = '"+str(id)+"';"
         query_result = load_data_db(query)
-        print(query_result)
         R['productHeader'] = query_result[0][0]
         R['imgSrc'] = query_result[0][1]
         if query_result[0][2] == None:
@@ -69,6 +66,7 @@ def get_similar_products(user_parameters, N_QUERY_RESULT = 5):
         n = nn.replace(" ","-")
         R['ProductUrl']= "https://www.magaya.world/product/"+n+"/"
         recommendations.append(R)
+
 
 def custom_metric(X1,X2):
     cat1 = X1[:(len(X1)-2)]

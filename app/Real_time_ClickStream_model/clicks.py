@@ -1,11 +1,15 @@
-from ..chat_based_model.Knn import get_similar_products,custom_metric,get_chatBased_recommendations
+from ..chat_based_model.Knn import get_similar_products,get_chatBased_recommendations
 
-dummy = []
+dummy =[]
+temp = []
 
 def get_dummy():
-    return dummy
+    return temp
 def recommend_clicks(products_details):
     global dummy
+    global temp
+    dummy =[]
+    temp =[]
     user_parameter = {}
     i = 0
     for product in products_details:
@@ -31,33 +35,45 @@ def recommend_clicks(products_details):
 
         if len(products_details) == 5:
             get_similar_products(user_parameter, 1)
+            dummy.append(get_chatBased_recommendations())
             user_parameter = {}
 
         elif len(products_details) == 4:
             if (i == 0):
                 get_similar_products(user_parameter, 2)
+                dummy.append(get_chatBased_recommendations())
             else:
                 get_similar_products(user_parameter, 1)
+                dummy.append(get_chatBased_recommendations())
             i += 1
             user_parameter = {}
 
         elif len(products_details) == 3:
             if (i < 2):
                 get_similar_products(user_parameter, 2)
+                dummy.append(get_chatBased_recommendations())
             else:
                 get_similar_products(user_parameter, 1)
+                dummy.append(get_chatBased_recommendations())
+
             i += 1
             user_parameter = {}
         
         elif len(products_details) == 2:
             if (i == 0):
                 get_similar_products(user_parameter, 3)
+                dummy.append(get_chatBased_recommendations())               
             else:
                 get_similar_products(user_parameter, 2)
+                dummy.append(get_chatBased_recommendations())
+
             i += 1
             user_parameter = {}
         
         elif len(products_details) == 1:
             get_similar_products(user_parameter, 5)
+            dummy.append(get_chatBased_recommendations())
             user_parameter = {}
-    dummy = get_chatBased_recommendations()
+    
+    for d in dummy:
+        temp.append(d[0])

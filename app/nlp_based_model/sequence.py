@@ -1,4 +1,4 @@
-nlp_based_messages = [
+text_based_messages = [
 {
     "message": {"TextField": " اهلا بيك، تحب ألميرس يساعدك ازاي؟"},
     "elementType": "ChoiceTemplate",
@@ -9,12 +9,12 @@ nlp_based_messages = [
     "message": {"TextField": "تحب تتكلم مع الميرس عن طريق الصوت ولا الكتابة ؟"},
     "elementType": "ChoiceTemplate",
     "choices":  ["الكتابة","الصوت"],
-    "choiceType":"communication_type"
+    "choiceType":"Communication_method"
 },
 {
-    "message": {"TextField": "ممكن اعرف الطفل ولد و لا بنت ؟"},
+    "message": {"TextField": "تمام, تحب حضرتك تدور ب اسم المنتج و لا وصفه ؟"},
     "elementType": "ChoiceTemplate",
-    "choices": ["بنت", "ولد"],
+    "choices": ["أسم المنتج", "وصفه"],
     "choiceType":"gender"
 },
 {

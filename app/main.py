@@ -15,7 +15,7 @@ from app.image_based_model.sequence import image_based_messages
 from app.image_based_model.imageModel import predictImages , get_imageBased_recommendations
 from app.Real_time_ClickStream_model.sequence import clicks_based_messages
 from app.Real_time_ClickStream_model.clicksModel import predictClicks,get_clicksBased_recommendations
-
+from app.nlp_based_model.sequence import text_based_messages
 # from flask_ngrok import run_with_ngrok
 
 
@@ -117,8 +117,6 @@ def sendText():
             data["serverSide"] = True
             data["status"] = 'BAD REQUEST'
 
-        return jsonify(data)
-
     elif model_messages == "image_based_messages":
         if index >= 0 & index < len(image_based_messages):
             data = image_based_messages[index]
@@ -132,8 +130,6 @@ def sendText():
             data["elementType"] = "MessageTemplate"
             data["serverSide"] = True
             data["status"] = 'BAD REQUEST'
-
-        return jsonify(data)
     
     elif model_messages == "clicks_based_messages":
         if index >= 0 & index < len(clicks_based_messages):
@@ -149,7 +145,21 @@ def sendText():
             data["serverSide"] = True
             data["status"] = 'BAD REQUEST'
 
-        return jsonify(data)
+    elif model_messages == "text_based_messages":
+        if index >= 0 & index < len(text_based_messages):
+            data = text_based_messages[index]
+            data["serverSide"] = True
+            data["index"] = index
+            data["status"] = 'success'
+
+        else:
+            data = messages[0]
+            data["message"] = "هناك عطل"
+            data["elementType"] = "MessageTemplate"
+            data["serverSide"] = True
+            data["status"] = 'BAD REQUEST'
+
+    return jsonify(data)
 
 
 #assuming this will only be used with image_based_model
@@ -233,8 +243,7 @@ def sendchangeRating():
             data["elementType"] = "MessageTemplate"
             data["serverSide"] = True
             data["status"] = 'BAD REQUEST'
-        print(data)
-        return jsonify(data)
+        
     elif(model_messages == "image_based_messages"):
         if index >= 0 & index < len(image_based_messages):
             data = image_based_messages[index] 
@@ -247,8 +256,6 @@ def sendchangeRating():
             data["elementType"] = "MessageTemplate"
             data["serverSide"] = True
             data["status"] = 'BAD REQUEST'
-        print(data)
-        return jsonify(data)
 
     elif(model_messages == "clicks_based_messages"):
         if index >= 0 & index < len(clicks_based_messages):
@@ -262,8 +269,8 @@ def sendchangeRating():
             data["elementType"] = "MessageTemplate"
             data["serverSide"] = True
             data["status"] = 'BAD REQUEST'
-        print(data)
-        return jsonify(data)
+    print(data)
+    return jsonify(data)
     
 #assuming this will only be used with chat_based_model
 @app.route('/sendpriceRange', methods=["POST"])
@@ -319,10 +326,6 @@ def sendpriceRange():
     return jsonify(data)
 
 
-
-
-
-
 #assuming this will only be used with clicks_based_model
 @app.route('/recommendFromClicks', methods=["POST"])
 def recommendFromClicks():
@@ -341,7 +344,7 @@ def recommendFromClicks():
 
             predictClicks()
             clicksBased_recommendations = get_clicksBased_recommendations()
-            print(clicksBased_recommendations)
+
             if(clicksBased_recommendations):
                 print("clicksBased_recommendations")
                 print(clicksBased_recommendations)
