@@ -27,7 +27,7 @@ def predictClicks():
     products_details = []
     for prod in products:
         prod = prod[0]
-        query = "SELECT categories_name,price,age FROM toys_shop.products WHERE product_id = '"+str(prod)+"';"
+        query = "SELECT categories_name,price,age,product_id FROM toys_shop.products WHERE product_id = '"+str(prod)+"';"
         prod = load_data_db(query)
         products_details.append(prod)
     recommend_clicks(products_details)
