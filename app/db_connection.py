@@ -57,12 +57,47 @@ class Database:
         print("Inserted Record Successfully")
         cursor.close()
         self.conn.close()
+    
+    def select_rows_dict_cursor_ids(self,id_results):
+        """Run SELECT query and return list of dicts."""
+        self.connect()
+        recommendations=[]
+        with self.conn.cursor(cursor_factory=DictCursor) as cur:
+            for id in id_results:
+                print(id)
+                R = {}
+                query = "select name,image_name,description from toys_shop.products where product_id = '" + str(
+                    id) + "';"
+                cur.execute(query)
+                query_result = cur.fetchall()
+                R['productHeader'] = query_result[0][0]
+                R['imgSrc'] = query_result[0][1]
+                if query_result[0][2] == None:
+                    R['productParagraph'] = ""
+                else:
+                    R['productParagraph'] = query_result[0][2]
+
+                R['id'] = "'" + str(id) + "'"
+                nn = str(query_result[0][0])
+                n = nn.replace(" ", "-")
+                R['ProductUrl'] = "https://www.magaya.world/product/" + n + "/"
+                recommendations.append(R)
+
+            cur.close()
+            return recommendations
 
 
 def load_data_db(query):
     db=Database()
     result = Database.select_rows_dict_cursor(db,query)
     return result
+
+
+def load_data_db_ids(ids):
+    db=Database()
+    result = Database.select_rows_dict_cursor_ids(db,ids)
+    return result
+
 
 def insert_data_db(query,record):
     db=Database()

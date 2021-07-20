@@ -1,6 +1,6 @@
 from app.chat_based_model.Kmeans import kmeans
 from .UserParameters import *
-from ..db_connection import load_data_db
+from ..db_connection import load_data_db, load_data_db_ids
 
 
 recommendations=[]
@@ -45,29 +45,35 @@ def get_similar_products(user_parameters, N_QUERY_RESULT = 5, product_id = -1):
 
     similar_product_indices = indices.reshape(-1)
 
-    global recommendations
-    recommendations=[]
+    id_results=[]
     products = clust[selected_cluster[0]]
     for i in similar_product_indices:
-        R = {}   
-        id = products[i][0]
-        if id == product_id:
-            continue
-        print("id",id)
-        query = "select name,image_name,description from toys_shop.products where product_id = '"+str(id)+"';"
-        query_result = load_data_db(query)
-        R['productHeader'] = query_result[0][0]
-        R['imgSrc'] = query_result[0][1]
-        if query_result[0][2] == None:
-            R['productParagraph'] = ""
-        else:
-            R['productParagraph'] = query_result[0][2]
+        id_results.append(products[i][0])    
+    global recommendations
+    recommendations=[]
+    recommendations = load_data_db_ids(id_results)
 
-        R['id']= id
-        nn = str(query_result[0][0])
-        n = nn.replace(" ","-")
-        R['ProductUrl']= "https://www.magaya.world/product/"+n+"/"
-        recommendations.append(R)
+    # products = clust[selected_cluster[0]]
+    # for i in similar_product_indices:
+    #     R = {}   
+    #     id = products[i][0]
+    #     if id == product_id:
+    #         continue
+    #     print("id",id)
+    #     query = "select name,image_name,description from toys_shop.products where product_id = '"+str(id)+"';"
+    #     query_result = load_data_db(query)
+    #     R['productHeader'] = query_result[0][0]
+    #     R['imgSrc'] = query_result[0][1]
+    #     if query_result[0][2] == None:
+    #         R['productParagraph'] = ""
+    #     else:
+    #         R['productParagraph'] = query_result[0][2]
+
+    #     R['id']= id
+    #     nn = str(query_result[0][0])
+    #     n = nn.replace(" ","-")
+    #     R['ProductUrl']= "https://www.magaya.world/product/"+n+"/"
+    #     recommendations.append(R)
 
 
 def custom_metric(X1,X2):
