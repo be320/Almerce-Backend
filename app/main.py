@@ -196,30 +196,6 @@ def sendImagesList():
         data["status"] = 'BAD REQUEST'
     return jsonify(data)
 
-@app.route('/sendAudioMessage', methods=["POST"])
-@cross_origin()
-def sendAudioMessage():
-    request_data = request.get_json()
-    temp = request_data["Template"]
-    index = temp["index"]
-    audio = temp["audio"]
-    print(index)
-    print(audio)
-    data = {}
-    if index >= 0 & index < len(messages):
-        data = messages[index]
-        data["serverSide"] = True
-        data["index"] = index
-        data["status"] = 'success'
-    else:
-        data = messages[0]
-        data["message"] = "هناك عطل"
-        data["elementType"] = "MessageTemplate"
-        data["serverSide"] = True
-        data["status"] = 'BAD REQUEST'
-    print(data)
-    return jsonify(data)
-
 
 @app.route('/sendchangeRating', methods=["POST"])
 @cross_origin()
@@ -269,6 +245,17 @@ def sendchangeRating():
             data["elementType"] = "MessageTemplate"
             data["serverSide"] = True
             data["status"] = 'BAD REQUEST'
+
+    elif(model_messages == "text_based_messages"):
+        data = {
+            "message": {"TextField":"تحب نساعدك بحاجة تاني؟"},
+            "elementType": "ChoiceTemplate",
+            "choices":  ["نعم"],
+            "choiceType":"restart"
+        }
+        data["serverSide"] = True
+        data["index"] = index
+        data["status"] = 'success'
     print(data)
     return jsonify(data)
     
@@ -349,8 +336,7 @@ def recommendFromClicks():
                 print("clicksBased_recommendations")
                 print(clicksBased_recommendations)
                 data['cards'] = clicksBased_recommendations
-
-                
+  
             data["reply"] = "Data Received"
             data["status"] = 'success'
     else:
