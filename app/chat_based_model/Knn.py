@@ -53,29 +53,6 @@ def get_similar_products(user_parameters, N_QUERY_RESULT = 5, product_id = -1):
     recommendations=[]
     recommendations = load_data_db_ids(id_results)
 
-    # products = clust[selected_cluster[0]]
-    # for i in similar_product_indices:
-    #     R = {}   
-    #     id = products[i][0]
-    #     if id == product_id:
-    #         continue
-    #     print("id",id)
-    #     query = "select name,image_name,description from toys_shop.products where product_id = '"+str(id)+"';"
-    #     query_result = load_data_db(query)
-    #     R['productHeader'] = query_result[0][0]
-    #     R['imgSrc'] = query_result[0][1]
-    #     if query_result[0][2] == None:
-    #         R['productParagraph'] = ""
-    #     else:
-    #         R['productParagraph'] = query_result[0][2]
-
-    #     R['id']= id
-    #     nn = str(query_result[0][0])
-    #     n = nn.replace(" ","-")
-    #     R['ProductUrl']= "https://www.magaya.world/product/"+n+"/"
-    #     recommendations.append(R)
-
-
 def custom_metric(X1,X2):
     cat1 = X1[:(len(X1)-2)]
     cat2 = X2[:(len(X2)-2)]
