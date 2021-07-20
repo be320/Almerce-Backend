@@ -1,9 +1,11 @@
+from typing import Counter
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 from .click_event import saveClick
 from .order_completed import order_completed_details
 import timeit, functools
 import os
+import random
 from .db_connection import load_data_db
 
 from app.chat_based_model.Sequence import chat_based_messages
@@ -17,6 +19,8 @@ from app.Real_time_ClickStream_model.sequence import clicks_based_messages
 from app.Real_time_ClickStream_model.clicksModel import predictClicks,get_clicksBased_recommendations
 from app.Real_time_ClickStream_model.clicks import reset_temp
 from app.nlp_based_model.sequence import text_based_messages
+from app.history_based_model.sequence import history_based_messages
+
 # from flask_ngrok import run_with_ngrok
 
 
@@ -31,6 +35,7 @@ chatBased_user_parameters = {}
 Knn_exec_time = 0.0
 ImgSerch_exec_time = 0.0
 model_messages = ""
+counter = 0
 ages = {'من 0-1 سنه' : 0.5, 'من 1-2 سنه' : 1.5, 'من 2-3 سنه' : 2.5, 'من 3-4 سنه' : 3.5, 'من 4-5 سنه' : 4.5, 'من 5-6 سنه' : 5.5, 'اكثر من 6 سنوات' : 7}
 
 if os.stat('Kmeans_Test_Cases.csv').st_size == 0:
@@ -77,6 +82,8 @@ def sendText():
             model_messages = "text_based_messages"
         elif (choice =="البحث من خلال تصفح الويب سايت"):
             model_messages = "clicks_based_messages"
+        elif (choice =="مش عارف"):
+            model_messages = "history_based_messages"
     #---------------------------------------------------------------
     if model_messages == "chat_based_messages":
         if index >= 0 & index < len(chat_based_messages):
@@ -149,6 +156,20 @@ def sendText():
     elif model_messages == "text_based_messages":
         if index >= 0 & index < len(text_based_messages):
             data = text_based_messages[index]
+            data["serverSide"] = True
+            data["index"] = index
+            data["status"] = 'success'
+
+        else:
+            data = messages[0]
+            data["message"] = "هناك عطل"
+            data["elementType"] = "MessageTemplate"
+            data["serverSide"] = True
+            data["status"] = 'BAD REQUEST'
+
+    elif model_messages == "history_based_messages":
+        if index >= 0 & index < len(history_based_messages):
+            data = history_based_messages[index]
             data["serverSide"] = True
             data["index"] = index
             data["status"] = 'success'
@@ -254,6 +275,33 @@ def sendchangeRating():
             "choices":  ["نعم"],
             "choiceType":"restart"
         }
+        data["serverSide"] = True
+        data["index"] = index
+        data["status"] = 'success'
+
+    elif(model_messages == "history_based_messages"):
+        global counter
+        if(rating < 4.0):
+            ids = load_data_db("SELECT product_id FROM toys_shop.products")
+            ids = np.array(ids)
+            ids =np.reshape(ids, -1)
+            random.seed(10)
+            random.shuffle(ids)
+            ids_chunks = [ids[x:x+5] for x in range(0, len(ids), 5)]
+            cards = load_data_db_ids(ids_chunks[counter])
+            counter = counter+1
+            data = {
+            'elementType': 'ProductCardTemplate',
+             'cards': cards, 
+             'choiceType': 'ShowRecommendations'}
+
+        else:
+            data = {
+                "message": {"TextField":"تحب نساعدك بحاجة تاني؟"},
+                "elementType": "ChoiceTemplate",
+                "choices":  ["نعم"],
+                "choiceType":"restart"
+            }
         data["serverSide"] = True
         data["index"] = index
         data["status"] = 'success'
