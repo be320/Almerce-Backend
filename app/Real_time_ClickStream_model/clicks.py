@@ -3,13 +3,15 @@ from ..chat_based_model.Knn import get_similar_products,get_chatBased_recommenda
 dummy =[]
 temp = []
 
-def get_dummy():
+def get_temp():
     return temp
+def reset_temp():
+    global temp
+    temp = []
 def recommend_clicks(products_details):
     global dummy
     global temp
     dummy =[]
-    temp =[]
     user_parameter = {}
     i = 0
     for product in products_details:
@@ -32,28 +34,29 @@ def recommend_clicks(products_details):
         print(product[0][1])
         user_parameter['price'] = [product[0][1], product[0][1]]
         user_parameter['age'] = product[0][2]
+        product_id = product[0][3]
 
         if len(products_details) == 5:
-            get_similar_products(user_parameter, 1)
+            get_similar_products(user_parameter, 2,product_id)
             dummy.append(get_chatBased_recommendations())
             user_parameter = {}
 
         elif len(products_details) == 4:
             if (i == 0):
-                get_similar_products(user_parameter, 2)
+                get_similar_products(user_parameter, 3,product_id)
                 dummy.append(get_chatBased_recommendations())
             else:
-                get_similar_products(user_parameter, 1)
+                get_similar_products(user_parameter, 2,product_id)
                 dummy.append(get_chatBased_recommendations())
             i += 1
             user_parameter = {}
 
         elif len(products_details) == 3:
             if (i < 2):
-                get_similar_products(user_parameter, 2)
+                get_similar_products(user_parameter, 3,product_id)
                 dummy.append(get_chatBased_recommendations())
             else:
-                get_similar_products(user_parameter, 1)
+                get_similar_products(user_parameter, 2,product_id)
                 dummy.append(get_chatBased_recommendations())
 
             i += 1
@@ -61,19 +64,24 @@ def recommend_clicks(products_details):
         
         elif len(products_details) == 2:
             if (i == 0):
-                get_similar_products(user_parameter, 3)
+                get_similar_products(user_parameter, 4,product_id)
                 dummy.append(get_chatBased_recommendations())               
             else:
-                get_similar_products(user_parameter, 2)
+                get_similar_products(user_parameter, 3,product_id)
                 dummy.append(get_chatBased_recommendations())
 
             i += 1
             user_parameter = {}
         
         elif len(products_details) == 1:
-            get_similar_products(user_parameter, 5)
+            get_similar_products(user_parameter, 6,product_id)
             dummy.append(get_chatBased_recommendations())
             user_parameter = {}
     
+    print("*** I am dummy ***")
+    print(dummy)
     for d in dummy:
-        temp.append(d[0])
+        for i in d:
+            temp.append(i)
+    print("*** I am temp ***")
+    print(temp)

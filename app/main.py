@@ -15,6 +15,7 @@ from app.image_based_model.sequence import image_based_messages
 from app.image_based_model.imageModel import predictImages , get_imageBased_recommendations
 from app.Real_time_ClickStream_model.sequence import clicks_based_messages
 from app.Real_time_ClickStream_model.clicksModel import predictClicks,get_clicksBased_recommendations
+from app.Real_time_ClickStream_model.clicks import reset_temp
 from app.nlp_based_model.sequence import text_based_messages
 # from flask_ngrok import run_with_ngrok
 
@@ -345,7 +346,7 @@ def recommendFromClicks():
         data["elementType"] = "MessageTemplate"
         data["serverSide"] = True
         data["status"] = 'BAD REQUEST'
-
+    reset_temp()
     return jsonify(data)
 
 # Track Click Events

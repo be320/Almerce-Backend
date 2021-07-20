@@ -10,7 +10,7 @@ def get_chatBased_recommendations():
 def get_error():
     return error
 
-def get_similar_products(user_parameters, N_QUERY_RESULT = 5):
+def get_similar_products(user_parameters, N_QUERY_RESULT = 5, product_id = -1):
     fixed_user_parameters = hot_encoding_user_parameters(user_parameters)
     # with open('data.pkl', 'rb') as handle:
     #     data = pickle.load(handle)
@@ -51,6 +51,8 @@ def get_similar_products(user_parameters, N_QUERY_RESULT = 5):
     for i in similar_product_indices:
         R = {}   
         id = products[i][0]
+        if id == product_id:
+            continue
         print("id",id)
         query = "select name,image_name,description from toys_shop.products where product_id = '"+str(id)+"';"
         query_result = load_data_db(query)
