@@ -10,7 +10,7 @@ def get_chatBased_recommendations():
 def get_error():
     return error
 
-def get_similar_products(user_parameters, N_QUERY_RESULT = 5, product_id = -1):
+def get_similar_products(user_parameters, N_QUERY_RESULT = 5):
     fixed_user_parameters = hot_encoding_user_parameters(user_parameters)
     # with open('data.pkl', 'rb') as handle:
     #     data = pickle.load(handle)
