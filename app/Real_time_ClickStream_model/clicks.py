@@ -80,11 +80,11 @@ def recommend_clicks(products_details):
             get_similar_products(user_parameter, 6)
             dummy.append(get_chatBased_recommendations())
             user_parameter = {}
-
+            
         product_ids.append(product_id)
     print(product_ids)
     for d in dummy:
         for i in d:
-            print(i['id'])
             if(i['id'] not in product_ids):
+                print(i['id'])
                 temp.append(i)
