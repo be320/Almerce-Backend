@@ -13,6 +13,7 @@ def reset_temp():
 def recommend_clicks(products_details):
     global dummy
     global temp
+    global product_ids
     dummy =[]
     user_parameter = {}
     i = 0
@@ -80,10 +81,10 @@ def recommend_clicks(products_details):
             dummy.append(get_chatBased_recommendations())
             user_parameter = {}
 
-        global product_ids
         product_ids.append(product_id)
-
+    print(product_ids)
     for d in dummy:
         for i in d:
+            print(i['id'])
             if(i['id'] not in product_ids):
                 temp.append(i)

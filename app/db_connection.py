@@ -77,7 +77,7 @@ class Database:
                 else:
                     R['productParagraph'] = query_result[0][2]
 
-                R['id'] = id
+                R['id'] = str(id)
                 nn = str(query_result[0][0])
                 n = nn.replace(" ", "-")
                 R['ProductUrl'] = "https://www.magaya.world/product/" + n + "/"
@@ -87,7 +87,7 @@ class Database:
             return recommendations
 
 
-    def select_rows_dict_cursor_clicks_model(self,query,products):
+    def select_rows_dict_cursor_clicks_model(self,products):
             """Run SELECT query and return list of dicts."""
             self.connect()
             recommendations=[]
@@ -112,13 +112,14 @@ def load_data_db_ids(ids):
     result = Database.select_rows_dict_cursor_ids(db,ids)
     return result
 
-def load_data_db_clicks_model(query,products):
+def load_data_db_clicks_model(products):
     db=Database()
-    result = Database.select_rows_dict_cursor_clicks_model(db,query,products)
+    result = Database.select_rows_dict_cursor_clicks_model(db,products)
     return result
 
 
 def insert_data_db(query,record):
+    print("insert_data_db called")
     db=Database()
     result = Database.insert_rows(db,query,record)
     return result

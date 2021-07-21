@@ -26,7 +26,7 @@ def predictClicks():
     id_results = products
 
     products_details = []
-    products_details = load_data_db_clicks_model(query,products)
+    products_details = load_data_db_clicks_model(products)
 
     recommend_clicks(products_details)
     Clicks_recommendation = get_temp()
