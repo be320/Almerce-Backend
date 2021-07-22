@@ -1,4 +1,4 @@
-from app.db_connection import Database
+from app.db_connection import Database, load_data_db_clicks_model
 from app.Real_time_ClickStream_model.clicks import recommend_clicks,get_temp
 
     
@@ -24,12 +24,10 @@ def predictClicks():
     if len(products) > 5:
         products = products[:5] 
     id_results = products
+
     products_details = []
-    for prod in products:
-        prod = prod[0]
-        query = "SELECT categories_name,price,age,product_id FROM toys_shop.products WHERE product_id = '"+str(prod)+"';"
-        prod = load_data_db(query)
-        products_details.append(prod)
+    products_details = load_data_db_clicks_model(products)
+
     recommend_clicks(products_details)
     Clicks_recommendation = get_temp()
 

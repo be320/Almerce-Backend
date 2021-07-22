@@ -1,6 +1,6 @@
 from app.chat_based_model.Kmeans import kmeans
 from .UserParameters import *
-from ..db_connection import load_data_db
+from ..db_connection import load_data_db, load_data_db_ids
 
 
 recommendations=[]
@@ -10,7 +10,7 @@ def get_chatBased_recommendations():
 def get_error():
     return error
 
-def get_similar_products(user_parameters, N_QUERY_RESULT = 5, product_id = -1):
+def get_similar_products(user_parameters, N_QUERY_RESULT = 5):
     fixed_user_parameters = hot_encoding_user_parameters(user_parameters)
     # with open('data.pkl', 'rb') as handle:
     #     data = pickle.load(handle)
@@ -45,8 +45,7 @@ def get_similar_products(user_parameters, N_QUERY_RESULT = 5, product_id = -1):
 
     similar_product_indices = indices.reshape(-1)
 
-    global recommendations
-    recommendations=[]
+    id_results=[]
     products = clust[selected_cluster[0]]
     for i in similar_product_indices:
         R = {}   
@@ -69,6 +68,10 @@ def get_similar_products(user_parameters, N_QUERY_RESULT = 5, product_id = -1):
         R['ProductUrl']= "https://www.almerce.xyz/product/"+n+"/"
         recommendations.append(R)
 
+        id_results.append(products[i][0])    
+    global recommendations
+    recommendations=[]
+    recommendations = load_data_db_ids(id_results)
 
 def custom_metric(X1,X2):
     cat1 = X1[:(len(X1)-2)]

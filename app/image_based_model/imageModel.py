@@ -1,5 +1,5 @@
 import io
-from app.db_connection import Database
+from app.db_connection import *
 from keras.models import load_model
 import tensorflow as tf
 import numpy as np
@@ -19,12 +19,6 @@ imageModel = VGG16(weights='imagenet', include_top=False, pooling='max')
 
 id_results = []
 recommendations=[]
-
-
-def load_data_db(query):
-    db=Database()
-    result = Database.select_rows_dict_cursor(db,query)
-    return result
 
 def predictImages(imageList):
     
@@ -67,7 +61,6 @@ def predictImages(imageList):
     get_similar_products()
 
 
-
 def get_similar_products():
     global recommendations
     for id in id_results:
@@ -87,6 +80,8 @@ def get_similar_products():
         n = nn.replace(" ","-")
         R['ProductUrl']= "https://www.almerce.xyz/product/"+n+"/"
         recommendations.append(R)
+    recommendations=[]
+    recommendations = load_data_db_ids(id_results)
 
 
 def get_imageBased_recommendations():
