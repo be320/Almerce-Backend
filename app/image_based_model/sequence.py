@@ -8,7 +8,7 @@ image_based_messages = [
 {
     "message": {"TextField": " ممكن صورة او صور  للمنتج الي بتدور عليه"},
     "elementType": "MessageTemplate",
-    "choices": [],
+    "choices": ["عودة"],
     "choiceType":"IMG"
 },
 {

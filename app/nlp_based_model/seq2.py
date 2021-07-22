@@ -1,45 +1,45 @@
 text_based_messages = [
 {
-    "message": {"TextField": " اهلا بيك، تحب ألميرس يساعدك ازاي؟"},
+    "message": {"TextField": "حاسس انك محتار ممكن ارشحلك حاجة؟"},
     "elementType": "ChoiceTemplate",
-    "choices":  ["البحث من خلال تصفح الويب سايت ","البحث عن طريق الاختيارات","البحث عن طريق الصور","التحدث مع ألميرس"],
+    "choices":  ["يا ريت","لا شكرا"],
     "choiceType":"model_type"
 },
 {
-    "message": {"TextField": "تحب تتكلم مع الميرس عن طريق الصوت ولا الكتابة ؟"},
+    "message": {"TextField": "عندك فكرة انت بتدور على ايه؟"},
     "elementType": "ChoiceTemplate",
-    "choices":  ["اختيار طريقة ترشيح اخرى","الكتابة","الصوت","عودة"],
+    "choices":  ["الكتابة","الصوت"],
     "choiceType":"Communication_method"
 },
 {
     "message": {"TextField": "تمام, تحب حضرتك تدور ب اسم المنتج و لا وصفه ؟"},
     "elementType": "ChoiceTemplate",
-    "choices": ["اختيار طريقة ترشيح اخرى","أسم المنتج", "وصفه","عودة"],
+    "choices": ["أسم المنتج", "وصفه"],
     "choiceType":"gender"
 },
 {
     "message": {"TextField": "حضرتك تحب اللعبة من اني قسم تبع القائمة الاولي ؟"},
     "elementType": "ChoiceTemplate",
-    "choices": ["اختيار طريقة ترشيح اخرى","عودة"],
+    "choices": [],
     "choiceType":"category1"
 },
 {
     "message": {"TextField":"حضرتك تحب اللعبة من اني قسم تبع القائمة الثانية ؟"},
     "elementType": "ChoiceTemplate",
-    "choices": ["اختيار طريقة ترشيح اخرى","عودة"],
+    "choices": [],
     "choiceType":"category2"
 },
     {
     "message": {"TextField":"حضرتك تحب اللعبة من اني قسم تبع القائمة الثالثة ؟"},
     "elementType": "ChoiceTemplate",
-    "choices": ["اختيار طريقة ترشيح اخرى","عودة"],
+    "choices": [],
     "choiceType":"category3"
 
 },
 {
     "message": {"TextField": " تمام جدا، تحب ادورلك في الاسعار من كام لكام؟"},
     "elementType": "PriceSliderTemplate",
-    "choices": ["اختيار طريقة ترشيح اخرى","عودة"],
+    "choices": [],
     "choiceType":"price"
 },
 {

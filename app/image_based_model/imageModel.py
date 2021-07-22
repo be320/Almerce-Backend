@@ -85,7 +85,7 @@ def get_similar_products():
         R['id']= "'"+str(id)+"'"
         nn = str(query_result[0][0])
         n = nn.replace(" ","-")
-        R['ProductUrl']= "https://www.magaya.world/product/"+n+"/"
+        R['ProductUrl']= "https://www.almerce.xyz/product/"+n+"/"
         recommendations.append(R)
 
 

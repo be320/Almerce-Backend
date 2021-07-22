@@ -8,13 +8,13 @@ clicks_based_messages = [
 {
     "message": {"TextField": "متقلقش حتي لو مش بتدور علي حاجة معينة الميرس هيقدر يساعدك و يعرف انت حابب ايه من خلال تصفحك للويب سايت, لو عجباك الفكرة دوس موافق"},
     "elementType": "ChoiceTemplate",
-    "choices": ["موافق"],
+    "choices": ["اختيار طريقة ترشيح اخرى","موافق","عودة"],
     "choiceType":"NONE"
 },
 {
     "message": {"TextField": "  جاري تتبع نقراتك، تقدر تتصفح الصفحة ذي ما تحب و اما تحب الميرس يعرضلك المقترحات قولنا"},
     "elementType": "ChoiceTemplate",
-    "choices": ["اعرض الاقتراحات"],
+    "choices": ["اختيار طريقة ترشيح اخرى","اعرض الاقتراحات","عودة"],
     "choiceType":"ClicksRecommendation"
 },
 {
