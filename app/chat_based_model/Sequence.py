@@ -8,39 +8,39 @@ chat_based_messages = [
     {
         "message": {"TextField": " اهلا بيك، انا لسة تحت الانشاء فهسألك شوية اسئلة كدة عشان اعرف اساعدك..يلا نبدأ؟ ممكن اعرف سن الطفل اللي هيلعب باللعبة ؟"},
         "elementType": "ChoiceTemplate",
-        "choices":  ["عودة", "اختيار طريقة ترشيح اخرى", "اكثر من 6 سنوات", "من 5-6 سنه", "من 4-5 سنه", "من 3-4 سنه", "من 2-3 سنه", "من 1-2 سنه", "من 0-1 سنه"],
+        "choices":  ["اختيار طريقة ترشيح اخرى", "اكثر من 6 سنوات","عودة","من 5-6 سنه", "من 4-5 سنه", "من 3-4 سنه", "من 2-3 سنه", "من 1-2 سنه", "من 0-1 سنه"],
         "choiceType":"age"
     },
     {
         "message": {"TextField": "ممكن اعرف الطفل ولد و لا بنت ؟"},
         "elementType": "ChoiceTemplate",
-        "choices": ["اختيار طريقة ترشيح اخرى", "بنت", "ولد", "عودة"],
+        "choices": ["عودة","بنت","ولد","اختيار طريقة ترشيح اخرى"],
         "choiceType":"gender"
 
     },
     {
         "message": {"TextField": "حضرتك تحب اللعبة من اني قسم تبع القائمة الاولي ؟"},
         "elementType": "ChoiceTemplate",
-        "choices": ["اختيار طريقة ترشيح اخرى", "عودة"],
+        "choices": [],
         "choiceType":"category1"
     },
     {
         "message": {"TextField": "حضرتك تحب اللعبة من اني قسم تبع القائمة الثانية ؟"},
         "elementType": "ChoiceTemplate",
-        "choices": ["اختيار طريقة ترشيح اخرى", "عودة"],
+        "choices": [],
         "choiceType":"category2"
     },
     {
         "message": {"TextField": "حضرتك تحب اللعبة من اني قسم تبع القائمة الثالثة ؟"},
         "elementType": "ChoiceTemplate",
-        "choices": ["اختيار طريقة ترشيح اخرى", "عودة"],
+        "choices": [],
         "choiceType":"category3"
 
     },
     {
         "message": {"TextField": " تمام جدا، تحب ادورلك في الاسعار من كام لكام؟"},
         "elementType": "PriceSliderTemplate",
-        "choices": ["اختيار طريقة ترشيح اخرى", "عودة"],
+        "choices": [],
         "choiceType":"price"
     },
     {
