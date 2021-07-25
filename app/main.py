@@ -103,13 +103,13 @@ def sendText():
 
             if data["choiceType"] == "category1":
                 data["choices"] = get_categories1()
-                # data["choices"].append("اختيار طريقة ترشيح اخرى")
-                # data["choices"].append("عودة")
+                data["choices"].append("اختيار طريقة ترشيح اخرى")
+                data["choices"].append("عودة")
             elif data["choiceType"] == "category2":
                 chatBased_user_parameters['category1'] = choice
                 category_2_records = get_categories2(choice)
-                # data["choices"].append("اختيار طريقة ترشيح اخرى")
-                # data["choices"].append("عودة")
+                data["choices"].append("اختيار طريقة ترشيح اخرى")
+                data["choices"].append("عودة")
                 if not category_2_records:
                     data["choices"] = ["NONE"]
                 else:
@@ -119,8 +119,8 @@ def sendText():
             elif data["choiceType"] == "category3":
                 chatBased_user_parameters['category2'] = choice
                 category_3_records = get_categories3(choice)
-                # data["choices"].append("اختيار طريقة ترشيح اخرى")
-                # data["choices"].append("عودة")
+                data["choices"].append("اختيار طريقة ترشيح اخرى")
+                data["choices"].append("عودة")
                 if not category_3_records:
                     data["choices"] = ["NONE"]
                 else:

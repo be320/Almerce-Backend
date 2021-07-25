@@ -72,11 +72,12 @@ def get_similar_products(user_parameters, N_QUERY_RESULT=5):
         R['id'] = id
         nn = str(query_result[0][0])
         n = nn.replace(" ", "-")
-        R['ProductUrl'] = "https://www.almerce.xyz/product/"+n+"/"
+        R['ProductUrl'] = "https://almerce.xyz/?product="+n+"/"
+        print(R['ProductUrl'])
         recommendations.append(R)
 
-        id_results.append(products[i][0])
-    recommendations = load_data_db_ids(id_results)
+    #     id_results.append(products[i][0])
+    # recommendations = load_data_db_ids(id_results)
 
 
 def custom_metric(X1, X2):
